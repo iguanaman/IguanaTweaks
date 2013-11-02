@@ -57,8 +57,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-
-@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1g", dependencies = "after:UndergroundBiomes@")
+@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1g", dependencies = "after:UndergroundBiomes")
 @NetworkMod(clientSideRequired=true, serverSideRequired=true)
 @ModstatInfo(prefix="igtweaks")
 public class IguanaTweaks {
