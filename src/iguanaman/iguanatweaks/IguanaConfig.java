@@ -10,12 +10,16 @@ import net.minecraftforge.common.Property;
 
 public class IguanaConfig {
 
+	public static boolean logStackSizeChanges;
+	public static boolean logHardnessChanges;
 	public static boolean damageSlowdownDifficultyScaling;
     public static boolean addDebugText;
     public static boolean addHudText;
     public static boolean detailedHudText;
     public static boolean lessObviousSilverfish;
     public static boolean alterPoison;
+    public static boolean disableSleeping;
+    public static boolean destroyBedOnRespawn;
     public static int blockStackSizeDividerMin;
     public static int blockStackSizeDividerMax;
     public static int itemStackSizeDivider;
@@ -26,6 +30,8 @@ public class IguanaConfig {
 	public static int damageSlowdownDuration;
 	public static int terrainSlowdownPercentage;
 	public static int miningExhaustionPercentage;
+	public static int respawnHealth;
+	public static boolean respawnHealthDifficultyScaling;
     public static List<String> restrictedDrops = new ArrayList<String>();
     public static double hardnessMultiplier;
     public static boolean hardnessBlockListIsWhitelist;
@@ -43,9 +49,21 @@ public class IguanaConfig {
         damageSlowdownDifficultyScalingProperty.comment = "Is the duration of the slowdown dependant on difficulty?";
         damageSlowdownDifficultyScaling = damageSlowdownDifficultyScalingProperty.getBoolean(true);
         
+        Property respawnHealthDifficultyScalingProperty = config.get("modules", "respawnHealthDifficultyScaling", true);
+        respawnHealthDifficultyScalingProperty.comment = "Is the amount of health you respawn with dependant on difficulty?";
+        respawnHealthDifficultyScaling = respawnHealthDifficultyScalingProperty.getBoolean(true);
+        
         Property lessObviousSilverfishProperty = config.get("modules", "lessObviousSilverfish", true);
         lessObviousSilverfishProperty.comment = "Silverfish blocks are less easy to spot";
         lessObviousSilverfish = lessObviousSilverfishProperty.getBoolean(true);
+        
+        Property disableSleepingProperty = config.get("modules", "disableSleeping", true);
+        disableSleepingProperty.comment = "Disable sleeping, spawn can still be set with a bed";
+        disableSleeping = disableSleepingProperty.getBoolean(true);
+        
+        Property destroyBedOnRespawnProperty = config.get("modules", "destroyBedOnRespawn", true);
+        destroyBedOnRespawnProperty.comment = "The bed nearest to the play upon respawn will be destroyed";
+        destroyBedOnRespawn = destroyBedOnRespawnProperty.getBoolean(true);
         
         Property alterPoisonProperty = config.get("modules", "alterPoison", true);
         alterPoisonProperty.comment = "Poison causes damage less often but is now deadly";
@@ -72,6 +90,11 @@ public class IguanaConfig {
         	armorWeight = 0d;
         	armorWeightProperty.set(armorWeight);
         	}
+        
+        Property respawnHealthProperty = config.get("modifiers", "respawnHealth", 10);
+        respawnHealthProperty.comment = "Amount of health you respawn with (with 'respawnHealthDifficultyScaling' this will be modified by difficulty)";
+        respawnHealth = Math.min(Math.max(respawnHealthProperty.getInt(10), 1), 20);
+        respawnHealthProperty.set(respawnHealth);
         
         Property itemStackSizeDividerProperty = config.get("modifiers", "itemStackSizeDivider", 2);
         itemStackSizeDividerProperty.comment = "Max stack size divider";
@@ -164,9 +187,9 @@ public class IguanaConfig {
         // modules
 		ConfigCategory hardnessCategory = config.getCategory("hardness");
         
-        Property hardnessMultiplierProperty = config.get("hardness", "hardnessMultiplier", 4d);
+        Property hardnessMultiplierProperty = config.get("hardness", "hardnessMultiplier", 2d);
         hardnessMultiplierProperty.comment = "Multiplier applied to the hardness of blocks (set to 1 to disable feature)";
-        hardnessMultiplier = hardnessMultiplierProperty.getDouble(4d);
+        hardnessMultiplier = hardnessMultiplierProperty.getDouble(2d);
         
         if (hardnessMultiplier < 0d) {
         	hardnessMultiplier = 1d;
@@ -180,8 +203,20 @@ public class IguanaConfig {
         Property hardnessBlockListProperty = config.get("hardness", "hardnessBlockList", new int[] {});
         hardnessBlockListProperty.comment = "Block ids (each on seperate line) for the hardness whitelist/blacklist";
         for (int i : hardnessBlockListProperty.getIntList()) hardnessBlockList.add(i);
-        
 		
+        
+		// logging
+		ConfigCategory loggingCategory = config.getCategory("logging");
+        
+        Property logHardnessChangesProperty = config.get("logging", "logHardnessChanges", false);
+        logHardnessChangesProperty.comment = "Writes a line to the console log when the stack size of an item/block gets changed";
+        logHardnessChanges = logHardnessChangesProperty.getBoolean(false);
+        
+        Property logStackSizeChangesProperty = config.get("logging", "logStackSizeChanges", false);
+        logStackSizeChangesProperty.comment = "Writes a line to the console log when the stack size of an item/block gets changed";
+        logStackSizeChanges = logStackSizeChangesProperty.getBoolean(false);
+		
+    	
 		// restrictions
 		ConfigCategory restrictionsCategory = config.getCategory("restrictions");
 

@@ -57,7 +57,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1g", dependencies = "after:UndergroundBiomes")
+@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1i", dependencies = "after:UndergroundBiomes")
 @NetworkMod(clientSideRequired=true, serverSideRequired=true)
 @ModstatInfo(prefix="igtweaks")
 public class IguanaTweaks {
@@ -102,30 +102,6 @@ public class IguanaTweaks {
                 poisonNew = (new IguanaPotion(19, true, 5149489)).setPotionName("potion.poison").setIconIndex(6, 0).setEffectiveness(0.25D);
             }
 
-            
-            // HARDNESS MULTIPLIER
-    		if (IguanaConfig.hardnessMultiplier != 1f) {
-    			for (Block block : Block.blocksList)
-    			{
-    				if (block != null && block.blockHardness > 0f)
-    				{
-	    				if ((IguanaConfig.hardnessBlockListIsWhitelist && IguanaConfig.hardnessBlockList.contains(block.blockID))
-	    						|| (!IguanaConfig.hardnessBlockListIsWhitelist && !IguanaConfig.hardnessBlockList.contains(block.blockID)))
-	    				{
-	    					float newHardness = block.blockHardness * (float)IguanaConfig.hardnessMultiplier;
-	    					IguanaLog.log("Changing hardness of " + block.getUnlocalizedName() + " to " + Float.toString(newHardness));
-	    					block.blockHardness = newHardness;
-	    				}
-    				}
-    			}
-	            
-	            if (Loader.isModLoaded("UndergroundBiomes") && IguanaConfig.hardnessMultiplier != 1d)
-	            {
-	            	IguanaLog.log("Changing hardness of Underground Biomes stone");
-	            	exterminatorJeff.undergroundBiomes.common.UndergroundBiomes.hardnessModifier *= (float)IguanaConfig.hardnessMultiplier;
-	            }
-    		}
-
         }
 
         @EventHandler
@@ -144,12 +120,38 @@ public class IguanaTweaks {
 
         @EventHandler
         public void postInit(FMLPostInitializationEvent event) {
-        	
+
+            // HARDNESS MULTIPLIER
+    		if (IguanaConfig.hardnessMultiplier != 1f) {
+            	IguanaLog.log("Changing hardness of blocks");
+            	
+    			for (Block block : Block.blocksList)
+    			{
+    				if (block != null && block.blockHardness > 0f)
+    				{
+	    				if ((IguanaConfig.hardnessBlockListIsWhitelist && IguanaConfig.hardnessBlockList.contains(block.blockID))
+	    						|| (!IguanaConfig.hardnessBlockListIsWhitelist && !IguanaConfig.hardnessBlockList.contains(block.blockID)))
+	    				{
+	    					float newHardness = block.blockHardness * (float)IguanaConfig.hardnessMultiplier;
+	    					if (IguanaConfig.logHardnessChanges) IguanaLog.log("Changing hardness of " + block.getUnlocalizedName() + " to " + Float.toString(newHardness));
+	    					block.blockHardness = newHardness;
+	    				}
+    				}
+    			}
+	            
+	            if (Loader.isModLoaded("UndergroundBiomes") && IguanaConfig.hardnessMultiplier != 1d)
+	            {
+	            	exterminatorJeff.undergroundBiomes.common.UndergroundBiomes.hardnessModifier *= (float)IguanaConfig.hardnessMultiplier;
+	            }
+    		}
+    		
+    		// STACK SIZE REDUCTION
         	StackSizeTweaks.init();
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			
            MinecraftForge.EVENT_BUS.register(new IguanaTweaksEventHook());
+           GameRegistry.registerPlayerTracker(new IguanaPlayerHandler());
         }
         
 		@EventHandler

@@ -11,15 +11,18 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumStatus;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.client.entity.*;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -248,7 +251,7 @@ public class IguanaTweaksEventHook {
 	@ForgeSubscribe(priority = EventPriority.LOWEST)
 	public void LivingDrops(LivingDropsEvent event)
 	{
-		if (IguanaConfig.restrictedDrops.size() > 0)
+		if (IguanaConfig.restrictedDrops.size() > 0 && event.entity != null && !(event.entity instanceof EntityPlayer))
 		{
 			Iterator<EntityItem> i = event.drops.iterator();
 			while (i.hasNext()) {
@@ -326,4 +329,16 @@ public class IguanaTweaksEventHook {
 		}
 	}
     
+    
+    @ForgeSubscribe
+    public void playerSleep(PlayerSleepInBedEvent event)
+    {
+        if (event.entityPlayer.worldObj.provider.dimensionId == 0)
+        {
+            event.result = EnumStatus.OTHER_PROBLEM;
+            event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x, event.y, event.z), false, 0);
+    	    event.entityPlayer.addChatMessage("Your spawn location has been set, enjoy the night");
+        }
+    }
+	
 }
