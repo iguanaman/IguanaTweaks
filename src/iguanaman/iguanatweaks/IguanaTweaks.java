@@ -58,7 +58,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1i", dependencies = "after:UndergroundBiomes")
-@NetworkMod(clientSideRequired=true, serverSideRequired=true)
+@NetworkMod(clientSideRequired=true, serverSideRequired=true, channels={"IguanaTweaks"}, packetHandler = IguanaPacketHandler.class)
 @ModstatInfo(prefix="igtweaks")
 public class IguanaTweaks {
 	
@@ -81,7 +81,7 @@ public class IguanaTweaks {
         	
         	IguanaConfig.Init(event.getSuggestedConfigurationFile());
         	
-        	slowdownNew = new Potion(IguanaConfig.newSlowdownPotionId, true, 5926017).setIconIndex(1, 0).setPotionName("potion.newSlowdownPotion");
+        	slowdownNew = new Potion(IguanaConfig.damageSlowdownPotionId, true, 5926017).setIconIndex(1, 0).setPotionName("potion.newSlowdownPotion");
             proxy.registerLocalization();
 
             

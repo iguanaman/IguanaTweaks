@@ -11,14 +11,21 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EnumStatus;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.client.entity.*;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet6SpawnPosition;
+import net.minecraft.network.packet.Packet70GameEvent;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -28,6 +35,8 @@ import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
 
 import cpw.mods.fml.common.FMLLog;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -104,14 +113,15 @@ public class IguanaTweaksEventHook {
 				Material blockOnMaterial = world.getBlockMaterial(posX, posY, posZ);
 				Material blockInMaterial = world.getBlockMaterial(posX, posY + 1, posZ);
 	
-		        if (blockOnMaterial == Material.grass || blockOnMaterial == Material.ground) slownessTerrain = 5; 
-		        else if (blockOnMaterial == Material.sand) slownessTerrain = 10;
+		        if (blockOnMaterial == Material.grass || blockOnMaterial == Material.ground) slownessTerrain = IguanaConfig.terrainSlowdownOnDirt; 
+		        else if (blockOnMaterial == Material.sand) slownessTerrain = IguanaConfig.terrainSlowdownOnSand;
 		        else if (blockOnMaterial == Material.leaves || blockOnMaterial == Material.plants 
-		        		|| blockOnMaterial == Material.vine || blockOnMaterial == Material.ice 
-		        		|| blockOnMaterial == Material.snow) slownessTerrain = 20;
+		        		|| blockOnMaterial == Material.vine) slownessTerrain = IguanaConfig.terrainSlowdownOnPlant;
+		        else if (blockOnMaterial == Material.ice) slownessTerrain = IguanaConfig.terrainSlowdownOnIce;
+		        else if (blockOnMaterial == Material.snow) slownessTerrain = IguanaConfig.terrainSlowdownOnSnow;
 		        
-		        if (blockInMaterial == Material.snow) slownessTerrain += 20;
-				else if (blockInMaterial == Material.vine || blockOnMaterial == Material.plants ) slownessTerrain += 5;
+		        if (blockInMaterial == Material.snow) slownessTerrain += IguanaConfig.terrainSlowdownInSnow;
+				else if (blockInMaterial == Material.vine || blockOnMaterial == Material.plants ) slownessTerrain += IguanaConfig.terrainSlowdownInPlant;
 		        
 		        if (blockOnMaterial == Material.ice) onIce = true;
 		        
@@ -287,16 +297,16 @@ public class IguanaTweaksEventHook {
 			{
 				WeightValues playerWeightValues = IguanaTweaks.playerWeights.get(player.username);
 
-				if (mc.gameSettings.showDebugInfo && IguanaConfig.addDebugText) {
+				if (mc.gameSettings.showDebugInfo && IguanaConfig.addEncumbranceDebugText) {
 					event.left.add("");
 					event.left.add("Weight: " + Double.toString(playerWeightValues.currentWeight) + " / " + Double.toString(playerWeightValues.maxWeight) 
 							+ " (" + Double.toString(playerWeightValues.encumberance) + "%)");
-				} else if (!player.isDead && !player.capabilities.isCreativeMode && IguanaConfig.addHudText) {
+				} else if (!player.isDead && !player.capabilities.isCreativeMode && IguanaConfig.addEncumbranceHudText) {
 					String color = "\u00A7f";
 					
 					String line = "";
 					
-					if (IguanaConfig.detailedHudText)
+					if (IguanaConfig.detailedEncumbranceHudText)
 					{
 						if (playerWeightValues.encumberance >= 30) color = "\u00A74";
 						else if (playerWeightValues.encumberance >= 20) color = "\u00A76";
@@ -336,9 +346,68 @@ public class IguanaTweaksEventHook {
         if (event.entityPlayer.worldObj.provider.dimensionId == 0)
         {
             event.result = EnumStatus.OTHER_PROBLEM;
-            event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x, event.y, event.z), false, 0);
-    	    event.entityPlayer.addChatMessage("Your spawn location has been set, enjoy the night");
+            if (IguanaConfig.disableSettingSpawn)
+            {
+	    	    event.entityPlayer.addChatMessage("Has no-one told you?  Beds are just decorative");
+            }
+            else
+            {
+	            event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x, event.y, event.z), false, 0);
+	    	    event.entityPlayer.addChatMessage("Your spawn location has been set, enjoy the night");
+            }
         }
+    }
+    
+    
+    @ForgeSubscribe
+    public void playerDeath(LivingDeathEvent event)
+    {
+		
+    	if (IguanaConfig.respawnLocationRandomisationMax > 0)
+    	{
+    	
+	    	// check it is a player that died
+	    	if (!(event.entityLiving instanceof EntityPlayerMP)) return;
+	    	
+	    	// setup vars
+	    	EntityPlayerMP player = (EntityPlayerMP)event.entityLiving;
+	    	World world = player.worldObj;
+	    	int dimension  = player.dimension;
+	    	
+	    	// save bed coordinates, if they exist
+	    	ChunkCoordinates spawnLoc = player.getBedLocation(dimension);
+	    	if (spawnLoc != null)
+	    	{
+	    		boolean forced = player.isSpawnForced(dimension);
+
+		        NBTTagCompound tags = player.getEntityData();
+		        if (!tags.hasKey("IguanaTweaks")) tags.setCompoundTag("IguanaTweaks", new NBTTagCompound());
+		        NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
+		        tagsIguana.setBoolean("SpawnForced", forced);
+		        tagsIguana.setInteger("SpawnDimension", dimension);
+		        tagsIguana.setInteger("SpawnX", spawnLoc.posX);
+		        tagsIguana.setInteger("SpawnY", spawnLoc.posY);
+		        tagsIguana.setInteger("SpawnZ", spawnLoc.posZ);
+	    	}
+	    	else
+	    	{
+		    	// get the players spawn coords
+	    		if (!world.provider.canRespawnHere()) dimension = world.provider.getRespawnDimension(player);
+	            WorldServer worldserver = MinecraftServer.getServer().worldServerForDimension(dimension);
+	    		spawnLoc = worldserver.getSpawnPoint();
+	    	}
+	    	
+	    	// get respawn coords
+	    	ChunkCoordinates spawnCoords = IguanaPlayerHandler.randomiseCoordinates(world, spawnLoc.posX, spawnLoc.posZ, IguanaConfig.respawnLocationRandomisationMin, IguanaConfig.respawnLocationRandomisationMax);
+	    	
+	    	// save new "bed" coords
+	    	if (spawnCoords != null) 
+	    	{
+	    		player.setSpawnChunk(spawnCoords, true, dimension);
+	    		PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(spawnCoords.posX, spawnCoords.posY, spawnCoords.posZ, true, dimension), (Player)player);
+	    	}
+
+    	}
     }
 	
 }

@@ -3,26 +3,53 @@ package iguanaman.iguanatweaks;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.IPlayerTracker;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockBed;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemInWorldManager;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.packet.Packet13PlayerLookMove;
+import net.minecraft.network.packet.Packet43Experience;
+import net.minecraft.network.packet.Packet6SpawnPosition;
+import net.minecraft.network.packet.Packet70GameEvent;
+import net.minecraft.network.packet.Packet9Respawn;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.demo.DemoWorldManager;
+import net.minecraft.server.management.ServerConfigurationManager;
 
 public class IguanaPlayerHandler implements IPlayerTracker {
 
 	@Override
    public void onPlayerLogin(EntityPlayer entityplayer) {
+		if (IguanaConfig.spawnLocationRandomisationMax > 0)
+		{
+	        NBTTagCompound tags = entityplayer.getEntityData();
+	        if (!tags.hasKey("IguanaTweaks")) tags.setCompoundTag("IguanaTweaks", new NBTTagCompound());
+	        NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
+	        if (!tagsIguana.hasKey("Spawned"))
+	        {
+	            tagsIguana.setBoolean("IguanaTweaksSpawn", true);
+				respawnPlayer((EntityPlayerMP)entityplayer, IguanaConfig.spawnLocationRandomisationMin, IguanaConfig.spawnLocationRandomisationMax);
+	        }
+		}
+		
    }
 
 	@Override
-	public void onPlayerLogout(EntityPlayer player) {
-	}
+	public void onPlayerLogout(EntityPlayer player) {}
 	
 	@Override
-	public void onPlayerChangedDimension(EntityPlayer player) {
-	}
+	public void onPlayerChangedDimension(EntityPlayer player) {}
 	
 	@Override
 	public void onPlayerRespawn(EntityPlayer entityplayer) {
@@ -46,40 +73,162 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 		
 		if (IguanaConfig.destroyBedOnRespawn)
 		{
-		    // destroy nearest bed block (4 block radius)
-			World world = entityplayer.worldObj;
+			ChunkCoordinates bedLoc = entityplayer.getBedLocation(entityplayer.dimension);
+			if (bedLoc != null)
+			{
+			    // destroy nearest bed block (4 block radius)
+				World world = entityplayer.worldObj;
+                if (world.getBlockId(bedLoc.posX, bedLoc.posY, bedLoc.posZ) == Block.bed.blockID)
+                {
+                	BlockBed bed = (BlockBed)Block.bed;
+                	int x = bedLoc.posX;
+                	int z = bedLoc.posZ;
+                	
+                	//make sure destroying the correct bed part
+                	int meta = world.getBlockMetadata(x, bedLoc.posY, z);
+                	if (bed.isBlockHeadOfBed(meta))
+                	{
+            	        for (int testX = x - 1; testX <= x + 1; ++testX)
+            	        {
+        	                for (int testZ = z - 1; testZ <= z + 1; ++testZ)
+        	                {
+        	                    if (world.getBlockId(testX, bedLoc.posY, testZ) == Block.bed.blockID)
+        	                    {
+        	                    	meta = world.getBlockMetadata(testX, bedLoc.posY, testZ);
+        	                    	if (!((BlockBed)Block.bed).isBlockHeadOfBed(meta)) 
+        	                    	{
+        	                    		x = testX;
+        	                    		z = testZ;
+        	                    		break;
+        	                    	}
+        	                    }
+        	                }
+            	        }
+                	}
+
+                	//destroy bed
+    	    		entityplayer.worldObj.destroyBlock(x, bedLoc.posY, z, false);
+    	    		entityplayer.setSpawnChunk(null, false, entityplayer.dimension);
+    	    		if (IguanaConfig.respawnLocationRandomisationMax == 0)
+    	    		{
+    	    			entityplayer.addChatMessage("You awake to find your bed smashed to pieces");
+    	    		}
+                }
+			}
+		}
+
+		if (IguanaConfig.respawnLocationRandomisationMax > 0)
+		{
+			boolean forced = false;
+			int dimension = entityplayer.dimension;
+			ChunkCoordinates spawnLoc = null;
 			
-			double posmod = 0d;
-			if(entityplayer instanceof EntityClientPlayerMP) posmod = 1.62d;
-			
-			int x = (int)entityplayer.posX;
-			int y = (int)(entityplayer.posY - posmod - 1d);
-			int z = (int)entityplayer.posZ;
-			if (x < 0) --x;
-			if (y < 0) --y;
-			if (z < 0) --z;
-			
-	        for (int testX = x - 3; testX <= x + 3; ++testX)
+			// reset bed coordinates
+	        NBTTagCompound tags = entityplayer.getEntityData();
+	        if (tags.hasKey("IguanaTweaks")) 
 	        {
-	            for (int testY = y - 1; testY <= y + 1; ++testY)
-	            {
-	                for (int testZ = z - 3; testZ <= z + 3; ++testZ)
-	                {
-	                    if (world.getBlockId(testX, testY, testZ) == Block.bed.blockID)
-	                    {
-	                    	int meta = world.getBlockMetadata(testX, testY, testZ);
-	                    	if (!((BlockBed)Block.bed).isBlockHeadOfBed(meta)) 
-	                    	{
-	                    		world.destroyBlock(testX, testY, testZ, false);
-	                    		entityplayer.setSpawnChunk(null, false);
-	                    	    entityplayer.addChatMessage("You awake to find your bed smashed to pieces");
-	                    		break;
-	                    	}
-	                    }
-	                }
-	            }
+	        	NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
+	        	if (tagsIguana.hasKey("SpawnForced"))
+	        	{
+	        		// get stored bed coords
+	        		forced = tagsIguana.getBoolean("SpawnForced");
+	        		dimension = tagsIguana.getInteger("SpawnDimension");
+	        		int bedX = tagsIguana.getInteger("SpawnX");
+	        		int bedY = tagsIguana.getInteger("SpawnY");
+	        		int bedZ = tagsIguana.getInteger("SpawnZ");
+
+	        		// update bed location
+		        	spawnLoc = new ChunkCoordinates(bedX, bedY, bedZ);
+		        	
+		        	// delete stored bed coords
+		        	tagsIguana.removeTag("SpawnForced");
+		        	tagsIguana.removeTag("SpawnDimension");
+		        	tagsIguana.removeTag("SpawnX");
+		        	tagsIguana.removeTag("SpawnY");
+		        	tagsIguana.removeTag("SpawnZ");
+	        	}
 	        }
+	        
+    		// unset fake bed coords
+    		entityplayer.setSpawnChunk(spawnLoc, forced, dimension);
+    		PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(spawnLoc.posX, spawnLoc.posY, spawnLoc.posZ, forced, dimension), (Player)entityplayer);
+			
+			// send a msg to the player
+    	    entityplayer.addChatMessage("You regain conciousness, confused as to where you are");
 		}
 		
+	}
+	
+	public static ChunkCoordinates randomiseCoordinates(World world, int x, int z, int rndFactorMin, int rndFactorMax)
+	{
+
+		int newX = -1;
+		int newZ = -1;
+		int newY = -1;
+	
+		// try 10 times to get a new spawn location
+		for (int attempt = 1; attempt <= 10; ++attempt)
+		{
+			//IguanaLog.log("spawn finder attempt " + attempt);
+			
+			// get new x
+			int modX = rndFactorMin;
+			if ((rndFactorMax - rndFactorMin) > 0) modX += world.rand.nextInt(rndFactorMax - rndFactorMin);  
+			if (world.rand.nextInt(100) < 50) modX *= -1;
+			newX = x + modX;
+			
+			// get new z
+			int modZ = rndFactorMin;
+			if ((rndFactorMax - rndFactorMin) > 0) modZ += world.rand.nextInt(rndFactorMax - rndFactorMin);  
+			if (world.rand.nextInt(100) < 50) modZ *= -1;
+			newZ = z + modZ;
+			
+			//get new y
+			newY = world.getTopSolidOrLiquidBlock(newX, newZ);
+			
+			// found the topmost block?
+			if (newY >= 0) 
+			{
+				// good spawn location found
+				IguanaLog.log("new randomised location " + newX + ", " + newY + ", " + newZ);
+				return new ChunkCoordinates(newX, newY, newZ);
+			}
+		}
+		
+		// if failed
+		return null;
+	}
+
+	public void respawnPlayer(EntityPlayerMP player, int rndFactorMin, int rndFactorMax)
+	{
+		int x = (int)player.posX;
+		int z = (int)player.posZ;
+		if (x < 0) --x;
+		if (z < 0) --z;
+		
+		// get world object
+		World world = player.worldObj;
+		
+		ChunkCoordinates newCoords = randomiseCoordinates(world, x, z, rndFactorMin, rndFactorMax);
+		
+		if (newCoords != null)
+		{
+			// good spawn location found
+			IguanaLog.log("good spawn found at " + newCoords.posX + ", " + newCoords.posY + ", " + newCoords.posZ);
+			
+			// move the player
+			player.setLocationAndAngles((double)((float)newCoords.posX + 0.5F), (double)((float)newCoords.posY + 1.1F), (double)((float)newCoords.posZ + 0.5F), 0.0F, 0.0F);
+
+	        WorldServer worldserver = player.getServerForPlayer();
+	        worldserver.theChunkProviderServer.loadChunk((int)player.posX >> 4, (int)player.posZ >> 4);
+
+	        while (!worldserver.getCollidingBoundingBoxes(player, player.boundingBox).isEmpty())
+	        {
+	            player.setPosition(player.posX, player.posY + 1.0D, player.posZ);
+	        }
+
+	        player.playerNetServerHandler.setPlayerLocation(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+		}
+			
 	}
 }

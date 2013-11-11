@@ -40,17 +40,17 @@ public class IguanaCommandConfig extends CommandBase {
 			}
 			else if (setting.equalsIgnoreCase("addDebugText"))
 			{
-				IguanaConfig.addDebugText = Boolean.parseBoolean(value);
+				IguanaConfig.addEncumbranceDebugText = Boolean.parseBoolean(value);
 				worked = true;
 			}
 			else if (setting.equalsIgnoreCase("addHudText"))
 			{
-				IguanaConfig.addHudText = Boolean.parseBoolean(value);
+				IguanaConfig.addEncumbranceHudText = Boolean.parseBoolean(value);
 				worked = true;
 			}
 			else if (setting.equalsIgnoreCase("detailedHudText"))
 			{
-				IguanaConfig.detailedHudText = Boolean.parseBoolean(value);
+				IguanaConfig.detailedEncumbranceHudText = Boolean.parseBoolean(value);
 				worked = true;
 			}
 			else if (setting.equalsIgnoreCase("maxCarryWeight") && isInteger(value))
