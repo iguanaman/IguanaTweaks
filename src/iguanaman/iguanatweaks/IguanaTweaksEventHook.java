@@ -358,19 +358,20 @@ public class IguanaTweaksEventHook {
         }
     }
     
-    
+    /*
     @ForgeSubscribe
     public void playerDeath(LivingDeathEvent event)
     {
 		
     	if (IguanaConfig.respawnLocationRandomisationMax > 0)
     	{
-    	
 	    	// check it is a player that died
-	    	if (!(event.entityLiving instanceof EntityPlayerMP)) return;
+	    	if (!(event.entityLiving instanceof EntityPlayer)) return;
+
+			IguanaLog.log("respawn code running playerDeath");
 	    	
 	    	// setup vars
-	    	EntityPlayerMP player = (EntityPlayerMP)event.entityLiving;
+	    	EntityPlayer player = (EntityPlayer)event.entityLiving;
 	    	World world = player.worldObj;
 	    	int dimension  = player.dimension;
 	    	
@@ -388,26 +389,40 @@ public class IguanaTweaksEventHook {
 		        tagsIguana.setInteger("SpawnX", spawnLoc.posX);
 		        tagsIguana.setInteger("SpawnY", spawnLoc.posY);
 		        tagsIguana.setInteger("SpawnZ", spawnLoc.posZ);
+		    	
+		    	// get respawn coords
+		    	ChunkCoordinates spawnCoords = IguanaPlayerHandler.randomiseCoordinates(world, spawnLoc.posX, spawnLoc.posZ, IguanaConfig.respawnLocationRandomisationMin, IguanaConfig.respawnLocationRandomisationMax);
+		    	
+		    	// save new "bed" coords
+		    	if (spawnCoords != null) 
+		    	{
+		    		IguanaLog.log("Setting respawn coords on both sides for " + player.username + " to " + spawnCoords.posX + "," +  spawnCoords.posY + "," + spawnCoords.posZ);
+		    		player.setSpawnChunk(spawnCoords, true, dimension);
+		    	}
 	    	}
-	    	else
-	    	{
+	    	else if (player instanceof EntityPlayerMP)
+    		{
+    			EntityPlayerMP playerMP = (EntityPlayerMP)player;
+    			
 		    	// get the players spawn coords
-	    		if (!world.provider.canRespawnHere()) dimension = world.provider.getRespawnDimension(player);
+	    		if (!world.provider.canRespawnHere()) dimension = world.provider.getRespawnDimension(playerMP);
 	            WorldServer worldserver = MinecraftServer.getServer().worldServerForDimension(dimension);
 	    		spawnLoc = worldserver.getSpawnPoint();
-	    	}
-	    	
-	    	// get respawn coords
-	    	ChunkCoordinates spawnCoords = IguanaPlayerHandler.randomiseCoordinates(world, spawnLoc.posX, spawnLoc.posZ, IguanaConfig.respawnLocationRandomisationMin, IguanaConfig.respawnLocationRandomisationMax);
-	    	
-	    	// save new "bed" coords
-	    	if (spawnCoords != null) 
-	    	{
-	    		player.setSpawnChunk(spawnCoords, true, dimension);
-	    		PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(spawnCoords.posX, spawnCoords.posY, spawnCoords.posZ, true, dimension), (Player)player);
-	    	}
-
+		    	
+		    	// get respawn coords
+		    	ChunkCoordinates spawnCoords = IguanaPlayerHandler.randomiseCoordinates(world, spawnLoc.posX, spawnLoc.posZ, IguanaConfig.respawnLocationRandomisationMin, IguanaConfig.respawnLocationRandomisationMax);
+		    	
+		    	// save new "bed" coords
+		    	if (spawnCoords != null) 
+		    	{
+		    		IguanaLog.log("Setting respawn coords server-side for " + player.username + " to " + spawnCoords.posX + "," +  spawnCoords.posY + "," + spawnCoords.posZ);
+		    		playerMP.setSpawnChunk(spawnCoords, true, dimension);
+		    		PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(false, spawnCoords.posX, spawnCoords.posY, spawnCoords.posZ, true, dimension), (Player)player);
+		    	}
+    		}
     	}
+
     }
+    	*/
 	
 }

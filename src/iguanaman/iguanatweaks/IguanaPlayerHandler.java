@@ -24,8 +24,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.demo.DemoWorldManager;
 import net.minecraft.server.management.ServerConfigurationManager;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
 
 public class IguanaPlayerHandler implements IPlayerTracker {
 
@@ -69,8 +72,58 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 	   }
 
 		entityplayer.setHealth((float)respawnHealth);
+
+		//split
+		if (IguanaConfig.respawnLocationRandomisationMax > 0)
+		{
+			IguanaLog.log("respawn code running onPlayerRespawn");
+			respawnPlayer((EntityPlayerMP)entityplayer, IguanaConfig.respawnLocationRandomisationMin, IguanaConfig.respawnLocationRandomisationMax);
+
+	        /*
+			boolean forced = false;
+			int dimension = entityplayer.dimension;
+			ChunkCoordinates spawnLoc = null;
+			
+			// reset bed coordinates
+	        NBTTagCompound tags = entityplayer.getEntityData();
+	        if (tags.hasKey("IguanaTweaks")) 
+	        {
+	        	NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
+	        	if (tagsIguana.hasKey("SpawnForced"))
+	        	{
+	        		// get stored bed coords
+	        		forced = tagsIguana.getBoolean("SpawnForced");
+	        		dimension = tagsIguana.getInteger("SpawnDimension");
+	        		int bedX = tagsIguana.getInteger("SpawnX");
+	        		int bedY = tagsIguana.getInteger("SpawnY");
+	        		int bedZ = tagsIguana.getInteger("SpawnZ");
+
+	        		// update bed location
+		        	spawnLoc = new ChunkCoordinates(bedX, bedY, bedZ);
+		        	
+		        	// delete stored bed coords
+		        	tagsIguana.removeTag("SpawnForced");
+		        	tagsIguana.removeTag("SpawnDimension");
+		        	tagsIguana.removeTag("SpawnX");
+		        	tagsIguana.removeTag("SpawnY");
+		        	tagsIguana.removeTag("SpawnZ");
+	        	}
+	        }
+	        
+    		// unset fake bed coords
+    		entityplayer.setSpawnChunk(spawnLoc, forced, dimension);
+    		if (spawnLoc == null)
+    			PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(true, 0, 0, 0, forced, dimension), (Player)entityplayer);
+    		else
+    			PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(false, spawnLoc.posX, spawnLoc.posY, spawnLoc.posZ, forced, dimension), (Player)entityplayer);
+			*/
+	        
+			// send a msg to the player
+    	    entityplayer.addChatMessage("You regain conciousness, confused as to where you are");
+		}
 		
 		
+		//split
 		if (IguanaConfig.destroyBedOnRespawn)
 		{
 			ChunkCoordinates bedLoc = entityplayer.getBedLocation(entityplayer.dimension);
@@ -116,46 +169,6 @@ public class IguanaPlayerHandler implements IPlayerTracker {
                 }
 			}
 		}
-
-		if (IguanaConfig.respawnLocationRandomisationMax > 0)
-		{
-			boolean forced = false;
-			int dimension = entityplayer.dimension;
-			ChunkCoordinates spawnLoc = null;
-			
-			// reset bed coordinates
-	        NBTTagCompound tags = entityplayer.getEntityData();
-	        if (tags.hasKey("IguanaTweaks")) 
-	        {
-	        	NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
-	        	if (tagsIguana.hasKey("SpawnForced"))
-	        	{
-	        		// get stored bed coords
-	        		forced = tagsIguana.getBoolean("SpawnForced");
-	        		dimension = tagsIguana.getInteger("SpawnDimension");
-	        		int bedX = tagsIguana.getInteger("SpawnX");
-	        		int bedY = tagsIguana.getInteger("SpawnY");
-	        		int bedZ = tagsIguana.getInteger("SpawnZ");
-
-	        		// update bed location
-		        	spawnLoc = new ChunkCoordinates(bedX, bedY, bedZ);
-		        	
-		        	// delete stored bed coords
-		        	tagsIguana.removeTag("SpawnForced");
-		        	tagsIguana.removeTag("SpawnDimension");
-		        	tagsIguana.removeTag("SpawnX");
-		        	tagsIguana.removeTag("SpawnY");
-		        	tagsIguana.removeTag("SpawnZ");
-	        	}
-	        }
-	        
-    		// unset fake bed coords
-    		entityplayer.setSpawnChunk(spawnLoc, forced, dimension);
-    		PacketDispatcher.sendPacketToPlayer(IguanaSpawnPacket.create(spawnLoc.posX, spawnLoc.posY, spawnLoc.posZ, forced, dimension), (Player)entityplayer);
-			
-			// send a msg to the player
-    	    entityplayer.addChatMessage("You regain conciousness, confused as to where you are");
-		}
 		
 	}
 	
@@ -183,14 +196,19 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 			if (world.rand.nextInt(100) < 50) modZ *= -1;
 			newZ = z + modZ;
 			
+			// check for ocean biome
+    		BiomeGenBase biome = world.getWorldChunkManager().getBiomeGenAt(newX, newZ);
+    		Type[] biomeTypes = BiomeDictionary.getTypesForBiome(biome);
+    		if (biomeTypes.length == 1 && biomeTypes[0] == Type.WATER) continue;
+			
 			//get new y
 			newY = world.getTopSolidOrLiquidBlock(newX, newZ);
 			
 			// found the topmost block?
 			if (newY >= 0) 
-			{
+			{	
 				// good spawn location found
-				IguanaLog.log("new randomised location " + newX + ", " + newY + ", " + newZ);
+				IguanaLog.log("good spawn found at " + newX + ", " + newY + ", " + newZ);
 				return new ChunkCoordinates(newX, newY, newZ);
 			}
 		}
@@ -213,12 +231,12 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 		
 		if (newCoords != null)
 		{
-			// good spawn location found
-			IguanaLog.log("good spawn found at " + newCoords.posX + ", " + newCoords.posY + ", " + newCoords.posZ);
 			
 			// move the player
 			player.setLocationAndAngles((double)((float)newCoords.posX + 0.5F), (double)((float)newCoords.posY + 1.1F), (double)((float)newCoords.posZ + 0.5F), 0.0F, 0.0F);
 
+			
+			//WorldServer worldserver = MinecraftServer.getServer().worldServerForDimension(player.dimension);
 	        WorldServer worldserver = player.getServerForPlayer();
 	        worldserver.theChunkProviderServer.loadChunk((int)player.posX >> 4, (int)player.posZ >> 4);
 

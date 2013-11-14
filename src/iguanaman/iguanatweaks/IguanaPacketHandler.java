@@ -20,6 +20,7 @@ public class IguanaPacketHandler implements IPacketHandler {
         if (packet.channel.equals("IguanaTweaks")) {
             DataInputStream inputStream = new DataInputStream(new ByteArrayInputStream(packet.data));
             
+            boolean isNull;
             int x;
             int y;
             int z;
@@ -27,6 +28,7 @@ public class IguanaPacketHandler implements IPacketHandler {
             int dimension;
            
             try {
+            		isNull = inputStream.readBoolean();
 	                x = inputStream.readInt();
 	                y = inputStream.readInt();
 	                z = inputStream.readInt();
@@ -38,7 +40,11 @@ public class IguanaPacketHandler implements IPacketHandler {
             }
            
             EntityPlayer playerSP = ((EntityPlayer)player);
-            playerSP.setSpawnChunk(new ChunkCoordinates(x, y, z), forced, dimension);
+            IguanaLog.log("Setting respawn coords client-side for " + playerSP.username + " to " + x + "," +  y + "," + z);
+            if (isNull)
+                playerSP.setSpawnChunk(null, forced, dimension);
+            else
+            	playerSP.setSpawnChunk(new ChunkCoordinates(x, y, z), forced, dimension);
         }
         
 	}

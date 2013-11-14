@@ -136,14 +136,14 @@ public class IguanaConfig {
         disableSettingSpawnProperty.comment = "If active using a bed will not set your spawn point (requires disableSleeping to be true)";
         disableSettingSpawn = disableSettingSpawnProperty.getBoolean(false);
         
-        Property respawnLocationRandomisationMinProperty = config.get("respawn", "respawnLocationRandomisationMin", 128);
+        Property respawnLocationRandomisationMinProperty = config.get("respawn", "respawnLocationRandomisationMin", 0);
         respawnLocationRandomisationMinProperty.comment = "Exactly where you respawn (after death) is randomised around the spawn point (either to a bed or original spawn point), at least a minimum of this many blocks away (set to 0 to disable)";
-        respawnLocationRandomisationMin = Math.max(respawnLocationRandomisationMinProperty.getInt(128), 0);
+        respawnLocationRandomisationMin = Math.max(respawnLocationRandomisationMinProperty.getInt(0), 0);
         respawnLocationRandomisationMinProperty.set(respawnLocationRandomisationMin);
         
-        Property respawnLocationRandomisationMaxProperty = config.get("respawn", "respawnLocationRandomisationMax", 256);
+        Property respawnLocationRandomisationMaxProperty = config.get("respawn", "respawnLocationRandomisationMax", 0);
         respawnLocationRandomisationMaxProperty.comment = "Exactly where you respawn (after death) is randomised around the spawn point (either to a bed or original spawn point), upto a maximum of this many blocks away (set to 0 to disable)";
-        respawnLocationRandomisationMax = Math.max(respawnLocationRandomisationMaxProperty.getInt(256), respawnLocationRandomisationMin);
+        respawnLocationRandomisationMax = Math.max(respawnLocationRandomisationMaxProperty.getInt(0), respawnLocationRandomisationMin);
         respawnLocationRandomisationMaxProperty.set(respawnLocationRandomisationMax);
         
         Property spawnLocationRandomisationMinProperty = config.get("respawn", "spawnLocationRandomisationMin", 0);
@@ -241,9 +241,9 @@ public class IguanaConfig {
         lessObviousSilverfishProperty.comment = "Silverfish blocks are less easy to spot";
         lessObviousSilverfish = lessObviousSilverfishProperty.getBoolean(true);
         
-        Property alterPoisonProperty = config.get("other", "alterPoison", true);
-        alterPoisonProperty.comment = "Poison causes damage less often but is now deadly";
-        alterPoison = alterPoisonProperty.getBoolean(true);
+        Property alterPoisonProperty = config.get("other", "alterPoison", false);
+        alterPoisonProperty.comment = "Poison causes damage less often but is now deadly (possibly causes crashes, use at own risk)";
+        alterPoison = alterPoisonProperty.getBoolean(false);
         
         Property torchesPerCoalProperty = config.get("other", "torchesPerCoal", 1);
         torchesPerCoalProperty.comment = "Torches given from torch recipe";
