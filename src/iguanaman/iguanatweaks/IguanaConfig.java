@@ -241,9 +241,9 @@ public class IguanaConfig {
         lessObviousSilverfishProperty.comment = "Silverfish blocks are less easy to spot";
         lessObviousSilverfish = lessObviousSilverfishProperty.getBoolean(true);
         
-        Property alterPoisonProperty = config.get("other", "alterPoison", false);
+        Property alterPoisonProperty = config.get("other", "alterPoison", true);
         alterPoisonProperty.comment = "Poison causes damage less often but is now deadly (possibly causes crashes, use at own risk)";
-        alterPoison = alterPoisonProperty.getBoolean(false);
+        alterPoison = alterPoisonProperty.getBoolean(true);
         
         Property torchesPerCoalProperty = config.get("other", "torchesPerCoal", 1);
         torchesPerCoalProperty.comment = "Torches given from torch recipe";

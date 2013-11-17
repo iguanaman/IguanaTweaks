@@ -220,6 +220,7 @@ public class IguanaTweaksEventHook {
 		}
 	}
 	
+	/*
 	@ForgeSubscribe
 	public void LivingHurt(LivingHurtEvent event)
 	{
@@ -236,10 +237,9 @@ public class IguanaTweaksEventHook {
 			int duration = Math.max(Math.min(Math.round(event.ammount * 5f * difficultyEffect), 255), 0);
 			int effect = duration;
 			
-			/*
-			if (event.entityLiving instanceof EntityPlayer) 
-				FMLLog.warning("a" + Float.toString(event.ammount) + " d" + duration + " e" + effect + " dif" + Float.toString(difficultyEffect));
-			*/
+
+			//if (event.entityLiving instanceof EntityPlayer) 
+			//	FMLLog.warning("a" + Float.toString(event.ammount) + " d" + duration + " e" + effect + " dif" + Float.toString(difficultyEffect));
 			
 			if (duration > 0)
 			{
@@ -247,16 +247,16 @@ public class IguanaTweaksEventHook {
 	        	if (currentEffect != null) {
 	        		duration = Math.min(duration + currentEffect.duration, 255);
 	        		effect = Math.min(effect + currentEffect.getAmplifier(), 255);
-	    			
-	        		/*
-	    			if (event.entityLiving instanceof EntityPlayer) 
-	    				FMLLog.warning("cd" + currentEffect.duration + " da" + duration + " ce" + currentEffect.getAmplifier() + " ea" + effect);
-	    			*/
+
+	    			//if (event.entityLiving instanceof EntityPlayer) 
+	    			//	FMLLog.warning("cd" + currentEffect.duration + " da" + duration + " ce" + currentEffect.getAmplifier() + " ea" + effect);
+
 	        	}
 	        	event.entityLiving.addPotionEffect(new PotionEffect(IguanaTweaks.slowdownNew.id, duration, effect, true));
 			}
 		}
 	}
+	*/
     
 	@ForgeSubscribe(priority = EventPriority.LOWEST)
 	public void LivingDrops(LivingDropsEvent event)
