@@ -41,7 +41,7 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 	        NBTTagCompound tagsIguana = tags.getCompoundTag("IguanaTweaks");
 	        if (!tagsIguana.hasKey("Spawned"))
 	        {
-	            tagsIguana.setBoolean("IguanaTweaksSpawn", true);
+	            tagsIguana.setBoolean("Spawned", true);
 				respawnPlayer((EntityPlayerMP)entityplayer, IguanaConfig.spawnLocationRandomisationMin, IguanaConfig.spawnLocationRandomisationMax);
 	        }
 		}
