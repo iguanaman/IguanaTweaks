@@ -343,7 +343,7 @@ public class IguanaTweaksEventHook {
     @ForgeSubscribe
     public void playerSleep(PlayerSleepInBedEvent event)
     {
-        if (event.entityPlayer.worldObj.provider.dimensionId == 0)
+        if (IguanaConfig.disableSleeping)
         {
             event.result = EnumStatus.OTHER_PROBLEM;
             if (IguanaConfig.disableSettingSpawn)
@@ -352,7 +352,7 @@ public class IguanaTweaksEventHook {
             }
             else
             {
-	            event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x, event.y, event.z), false, 0);
+	            event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x, event.y, event.z), false, event.entityPlayer.worldObj.provider.dimensionId);
 	    	    event.entityPlayer.addChatMessage("Your spawn location has been set, enjoy the night");
             }
         }
