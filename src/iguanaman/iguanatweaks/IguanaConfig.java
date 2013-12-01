@@ -54,11 +54,28 @@ public class IguanaConfig {
 	public static int terrainSlowdownInSnow;
 	public static int terrainSlowdownInPlant;
 	
+	// item entity lifespans
+	public static int itemLifespanMobDeath;
+	public static int itemLifespanPlayerDeath;
+	public static int itemLifespanTossed;
+	
+	// disable world gen
+	public static boolean disableDirtGen;
+	public static boolean disableGravelGen;
+	public static boolean disableCoalGen;
+	public static boolean disableIronGen;
+	public static boolean disableGoldGen;
+	public static boolean disableRedstoneGen;
+	public static boolean disableLapisGen;
+	public static boolean disableDiamondGen;
+	
 	// other
+	public static boolean increasedStepHeight;
     public static boolean lessObviousSilverfish;
     public static boolean alterPoison;
     public static int torchesPerCoal;
 	public static int miningExhaustionPercentage;
+	public static int tickRateEntityUpdate;
     
 	public static void Init(File file)
 	{
@@ -232,10 +249,71 @@ public class IguanaConfig {
         terrainSlowdownInPlant = Math.max(terrainSlowdownInPlantProperty.getInt(5), 0);
         terrainSlowdownInPlantProperty.set(terrainSlowdownInPlant);
         
+
+        // item lifespans
+		ConfigCategory itemlifespansCategory = config.getCategory("itemlifespans");
+		itemlifespansCategory.setComment("Set lifespan of items spawned in various situations (20 ticks = 1 second)");
+
+        Property itemLifespanMobDeathProperty = config.get("itemlifespans", "itemLifespanMobDeath", 6000);
+        itemLifespanMobDeathProperty.comment = "Lifespan (in ticks) of items dropped when a mob dies (default 6000)";
+        itemLifespanMobDeath = Math.max(itemLifespanMobDeathProperty.getInt(6000), 0);
+        itemLifespanMobDeathProperty.set(itemLifespanMobDeath);
+
+        Property itemLifespanPlayerDeathProperty = config.get("itemlifespans", "itemLifespanPlayerDeath", 6000);
+        itemLifespanPlayerDeathProperty.comment = "Lifespan (in ticks) of items dropped when a player dies (default 6000)";
+        itemLifespanPlayerDeath = Math.max(itemLifespanPlayerDeathProperty.getInt(6000), 0);
+        itemLifespanPlayerDeathProperty.set(itemLifespanPlayerDeath);
+
+        Property itemLifespanTossedProperty = config.get("itemlifespans", "itemLifespanTossed", 6000);
+        itemLifespanTossedProperty.comment = "Lifespan (in ticks) of items tossed on the grown (default 6000)";
+        itemLifespanTossed = Math.max(itemLifespanTossedProperty.getInt(6000), 0);
+        itemLifespanTossedProperty.set(itemLifespanTossed);
+        
+        
+        // disable world gen
+		ConfigCategory vanillaoregenCategory = config.getCategory("vanillaoregen");
+		vanillaoregenCategory.setComment("Allows you disable parts of the vanilla ore generation");
+
+        Property disableDirtGenProperty = config.get("vanillaoregen", "disableDirtGen", false);
+        disableDirtGenProperty.comment = "Disables vanilla generation of underground dirt clusters";
+        disableDirtGen = disableDirtGenProperty.getBoolean(false);
+
+        Property disableGravelGenProperty = config.get("vanillaoregen", "disableGravelGen", false);
+        disableGravelGenProperty.comment = "Disables vanilla generation of underground gravel clusters";
+        disableGravelGen = disableGravelGenProperty.getBoolean(false);
+
+        Property disableCoalGenProperty = config.get("vanillaoregen", "disableCoalGen", false);
+        disableCoalGenProperty.comment = "Disables vanilla generation of coal ore";
+        disableCoalGen = disableCoalGenProperty.getBoolean(false);
+
+        Property disableIronGenProperty = config.get("vanillaoregen", "disableIronGen", false);
+        disableIronGenProperty.comment = "Disables vanilla generation of Iron ore";
+        disableIronGen = disableIronGenProperty.getBoolean(false);
+
+        Property disableGoldGenProperty = config.get("vanillaoregen", "disableGoldGen", false);
+        disableGoldGenProperty.comment = "Disables vanilla generation of Gold ore";
+        disableGoldGen = disableGoldGenProperty.getBoolean(false);
+
+        Property disableRedstoneGenProperty = config.get("vanillaoregen", "disableRedstoneGen", false);
+        disableRedstoneGenProperty.comment = "Disables vanilla generation of Redstone ore";
+        disableRedstoneGen = disableRedstoneGenProperty.getBoolean(false);
+
+        Property disableLapisGenProperty = config.get("vanillaoregen", "disableLapisGen", false);
+        disableLapisGenProperty.comment = "Disables vanilla generation of Lapis ore";
+        disableLapisGen = disableLapisGenProperty.getBoolean(false);
+
+        Property disableDiamondGenProperty = config.get("vanillaoregen", "disableDiamondGen", false);
+        disableDiamondGenProperty.comment = "Disables vanilla generation of Diamond ore";
+        disableDiamondGen = disableDiamondGenProperty.getBoolean(false);
+
         
         // other
 		ConfigCategory otherCategory = config.getCategory("other");
 		otherCategory.setComment("Collection of misfits");
+        
+        Property increasedStepHeightProperty = config.get("other", "increasedStepHeight", false);
+        increasedStepHeightProperty.comment = "Can players step up full blocks without jumping?";
+        increasedStepHeight = increasedStepHeightProperty.getBoolean(false);
         
         Property lessObviousSilverfishProperty = config.get("other", "lessObviousSilverfish", true);
         lessObviousSilverfishProperty.comment = "Silverfish blocks are less easy to spot";
@@ -259,6 +337,11 @@ public class IguanaConfig {
         damageSlowdownPotionIdProperty.comment = "Potion ID for the damage slowdown effect (maximum 31)";
         damageSlowdownPotionId = Math.max(damageSlowdownPotionIdProperty.getInt(29), 0);
         damageSlowdownPotionIdProperty.set(damageSlowdownPotionId);
+        
+        Property tickRateEntityUpdateProperty = config.get("other", "tickRateEntityUpdate", 5);
+        tickRateEntityUpdateProperty.comment = "How often the speed of entities are calculated (in ticks).  Higher values reduce client-side CPU load but increase the chance of odd behavior";
+        tickRateEntityUpdate = Math.max(tickRateEntityUpdateProperty.getInt(5), 1);
+        tickRateEntityUpdateProperty.set(tickRateEntityUpdate);
 
 		
     	

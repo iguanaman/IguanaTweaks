@@ -35,8 +35,6 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.modstats.ModstatInfo;
 import org.modstats.Modstats;
 
-import com.google.common.base.Optional;
-
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -73,7 +71,7 @@ public class IguanaTweaks {
         public static Potion poisonNew;
         public static Potion slowdownNew;
 
-        public static ConcurrentHashMap<String, WeightValues> playerWeights = new ConcurrentHashMap<String, WeightValues>();
+        public static ConcurrentHashMap<UUID, EntityData> entityDataMap = new ConcurrentHashMap<UUID, EntityData>();
         public static ConcurrentHashMap<String, Integer> playerLastJump = new ConcurrentHashMap<String, Integer>();
 
         @EventHandler

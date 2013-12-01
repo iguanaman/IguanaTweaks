@@ -34,6 +34,7 @@ public class IguanaPlayerHandler implements IPlayerTracker {
 
 	@Override
    public void onPlayerLogin(EntityPlayer entityplayer) {
+		
 		if (IguanaConfig.spawnLocationRandomisationMax > 0)
 		{
 	        NBTTagCompound tags = entityplayer.getEntityData();

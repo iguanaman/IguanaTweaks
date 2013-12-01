@@ -1,13 +1,15 @@
 package iguanaman.iguanatweaks;
 
-public class WeightValues {
+public class EntityData {
 
 	public double currentWeight;
 	public double maxWeight;
 	public double encumberance;
 	public double armour;
+	public double speedModifier;
 	
-	public WeightValues(double currentWeight, double maxWeight, double encumberance, double armour) {
+	public EntityData(double speedModifier, double currentWeight, double maxWeight, double encumberance, double armour) {
+		this.speedModifier = speedModifier;
 		this.currentWeight = currentWeight;
 		this.maxWeight = maxWeight;
 		this.encumberance = encumberance;
