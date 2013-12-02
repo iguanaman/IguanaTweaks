@@ -53,6 +53,7 @@ public class IguanaConfig {
 	public static int terrainSlowdownOnSnow;
 	public static int terrainSlowdownInSnow;
 	public static int terrainSlowdownInPlant;
+	public static int rockWeight;
 	
 	// item entity lifespans
 	public static int itemLifespanMobDeath;
@@ -248,6 +249,11 @@ public class IguanaConfig {
         terrainSlowdownInPlantProperty.comment = "Percentage of slowdown when walking through plants (Set 0 to disable)";
         terrainSlowdownInPlant = Math.max(terrainSlowdownInPlantProperty.getInt(5), 0);
         terrainSlowdownInPlantProperty.set(terrainSlowdownInPlant);
+        
+        Property rockWeightProperty = config.get("movementrestriction", "rockWeight", 1);
+        rockWeightProperty.comment = "Weight of one rock block, used as a base to calculate weight of other blocks";
+        rockWeight = Math.max(rockWeightProperty.getInt(1), 1);
+        rockWeightProperty.set(rockWeight);
         
 
         // item lifespans

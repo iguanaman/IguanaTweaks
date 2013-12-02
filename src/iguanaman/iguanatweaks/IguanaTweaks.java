@@ -35,6 +35,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import org.modstats.ModstatInfo;
 import org.modstats.Modstats;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -155,9 +156,24 @@ public class IguanaTweaks {
 		@EventHandler
 		public void serverStarting(FMLServerStartingEvent event)
 		{
-			ICommandManager commandManager = ModLoader.getMinecraftServerInstance().getCommandManager();
+			ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
 			ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
 			serverCommandManager.registerCommand(new IguanaCommandConfig());
+		}
+		
+		public static double getBlockWeight(Block block)
+		{
+			Material blockMaterial = block.blockMaterial;
+        	
+	        if (blockMaterial == Material.iron || blockMaterial == Material.anvil) return 1.5d;
+	        else if (blockMaterial == Material.rock) return 1d;
+	        else if (blockMaterial == Material.grass || blockMaterial == Material.ground 
+	        		|| blockMaterial == Material.sand || blockMaterial == Material.snow 
+	        		|| blockMaterial == Material.wood || blockMaterial == Material.glass 
+	        		|| blockMaterial == Material.ice || blockMaterial == Material.tnt) return 0.5d;
+	        else if (blockMaterial == Material.cloth) return 0.25d;
+	        else if (block.isOpaqueCube()) return 1d / 16d;
+	        else return 1d / 64d; // item like block
 		}
 
 }

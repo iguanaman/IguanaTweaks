@@ -162,25 +162,14 @@ public class IguanaTweaksEventHook {
 						        double toAdd = 0d;	
 						        
 								ItemStack stack = slot.getStack();
-								Material blockMaterial = null;
+								Block block = null;
 						        try {
-						        	blockMaterial = Block.blocksList[stack.getItem().itemID].blockMaterial;
+						        	block = Block.blocksList[stack.getItem().itemID];
 						        } catch (Exception e) {
 						        }
-		
-						        if (blockMaterial != null) 
-						        {
-							        if (blockMaterial == Material.rock) toAdd = 1d;
-							        if (blockMaterial == Material.grass || blockMaterial == Material.ground 
-							        		|| blockMaterial == Material.sand || blockMaterial == Material.snow 
-							        		|| blockMaterial == Material.wood || blockMaterial == Material.glass 
-							        		|| blockMaterial == Material.ice || blockMaterial == Material.tnt) toAdd = 0.5d;
-							        if (blockMaterial == Material.iron || blockMaterial == Material.anvil) toAdd = 1.5d;
-							        if (blockMaterial == Material.leaves || blockMaterial == Material.plants 
-							        		|| blockMaterial == Material.vine) toAdd = 1.0d / 16d;
-							        if (blockMaterial == Material.cloth) toAdd = 1.0d / 4d;
-						        } else if (stack.getItem().itemID < Block.blocksList.length) { //is block
-						        	toAdd = 1d / 32d;
+
+						        if (block != null) {
+							        toAdd = IguanaTweaks.getBlockWeight(block) * (double)IguanaConfig.rockWeight;
 						        } else { //is item
 						        	toAdd = 1d / 64d;
 						        }

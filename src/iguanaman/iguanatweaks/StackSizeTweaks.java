@@ -24,23 +24,13 @@ public class StackSizeTweaks {
 
         		if (item != null)
         		{
-        			Material blockMaterial = block.blockMaterial;
-        			float materialModifier = 0.0F;
-			        if (blockMaterial == Material.rock) materialModifier = 1.0F;
-			        if (blockMaterial == Material.grass || blockMaterial == Material.ground 
-			        		|| blockMaterial == Material.sand || blockMaterial == Material.snow 
-			        		|| blockMaterial == Material.wood || blockMaterial == Material.glass 
-			        		|| blockMaterial == Material.ice || blockMaterial == Material.tnt) materialModifier = 0.5F;
-			        if (blockMaterial == Material.iron || blockMaterial == Material.anvil) materialModifier = 1.5F;
-			        if (blockMaterial == Material.leaves || blockMaterial == Material.plants 
-			        		|| blockMaterial == Material.vine) materialModifier = 1.0F / 16F;
-			        if (blockMaterial == Material.cloth) materialModifier = 0.25F;
+        			float blockWeight = (float)IguanaTweaks.getBlockWeight(block);
 			        
 			        int size = 0;
 			        
-			        if (materialModifier > 0.0F) 
+			        if (blockWeight > 0d) 
 			        {
-		        		size = Math.round((float) item.maxStackSize / ((float) IguanaConfig.blockStackSizeDividerMax * materialModifier));
+		        		size = Math.round((float) item.maxStackSize / ((float) IguanaConfig.blockStackSizeDividerMax * blockWeight));
 		        		if (size > item.maxStackSize / IguanaConfig.blockStackSizeDividerMin) size = item.maxStackSize / IguanaConfig.blockStackSizeDividerMin;
 			        } else {
 		        		size = Math.round((float)item.maxStackSize / (float)IguanaConfig.blockStackSizeDividerMin);
