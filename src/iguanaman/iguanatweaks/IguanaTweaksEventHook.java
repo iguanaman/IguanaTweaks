@@ -412,6 +412,16 @@ public class IguanaTweaksEventHook {
     		event.setResult(Result.DENY);
     	}
     }
+
+    @ForgeSubscribe
+    public void onEntityJoinWorldEvent(EntityJoinWorldEvent event)
+    {
+    	if (event.entity != null && event.entity instanceof EntityItem)
+    	{
+    		EntityItem item = (EntityItem)event.entity;
+    		if (item.lifespan != 6000 && IguanaConfig.itemLifespan != 6000) item.lifespan = IguanaConfig.itemLifespan;
+    	}
+    }
     
     /*
     @ForgeSubscribe

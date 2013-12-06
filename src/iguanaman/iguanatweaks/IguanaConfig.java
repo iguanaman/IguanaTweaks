@@ -56,6 +56,7 @@ public class IguanaConfig {
 	public static int rockWeight;
 	
 	// item entity lifespans
+	public static int itemLifespan;
 	public static int itemLifespanMobDeath;
 	public static int itemLifespanPlayerDeath;
 	public static int itemLifespanTossed;
@@ -259,6 +260,11 @@ public class IguanaConfig {
         // item lifespans
 		ConfigCategory itemlifespansCategory = config.getCategory("itemlifespans");
 		itemlifespansCategory.setComment("Set lifespan of items spawned in various situations (20 ticks = 1 second)");
+
+        Property itemLifespanProperty = config.get("itemlifespans", "itemLifespan", 6000);
+        itemLifespanProperty.comment = "Lifespan (in ticks) of items on the ground (default 6000)";
+        itemLifespan = Math.max(itemLifespanProperty.getInt(6000), 0);
+        itemLifespanProperty.set(itemLifespan);
 
         Property itemLifespanMobDeathProperty = config.get("itemlifespans", "itemLifespanMobDeath", 6000);
         itemLifespanMobDeathProperty.comment = "Lifespan (in ticks) of items dropped when a mob dies (default 6000)";
