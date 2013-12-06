@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EnumStatus;
@@ -34,6 +35,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.Event.Result;
 import net.minecraftforge.event.EventPriority;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -323,7 +325,6 @@ public class IguanaTweaksEventHook {
     @SideOnly(Side.CLIENT)
 	@ForgeSubscribe
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Text event) {
-    	
 		if (IguanaConfig.maxCarryWeight > 0 || IguanaConfig.armorWeight > 0d) 
 		{
 			Minecraft mc = Minecraft.getMinecraft();
@@ -415,10 +416,18 @@ public class IguanaTweaksEventHook {
     @ForgeSubscribe
     public void onEntityJoinWorldEvent(EntityJoinWorldEvent event)
     {
-    	if (event.entity != null && event.entity instanceof EntityItem)
+    	if (event.entity != null)
     	{
-    		EntityItem item = (EntityItem)event.entity;
-    		if (item.lifespan != 6000 && IguanaConfig.itemLifespan != 6000) item.lifespan = IguanaConfig.itemLifespan;
+    		if (event.entity instanceof EntityItem)
+	    	{
+	    		EntityItem item = (EntityItem)event.entity;
+	    		if (item.lifespan != 6000 && IguanaConfig.itemLifespan != 6000) item.lifespan = IguanaConfig.itemLifespan;
+	    	}
+    		else if (event.entity instanceof EntityXPOrb && IguanaConfig.removeVanillaLeveling)
+    		{
+    			EntityXPOrb orb = (EntityXPOrb)event.entity;
+    			orb.xpOrbAge = 6000;
+    		}
     	}
     }
     

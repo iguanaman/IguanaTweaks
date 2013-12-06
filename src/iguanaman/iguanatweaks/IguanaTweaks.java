@@ -24,6 +24,7 @@ import net.minecraft.item.ItemBucketMilk;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.src.ModLoader;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.common.ConfigCategory;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.ForgeHooks;
@@ -146,6 +147,8 @@ public class IguanaTweaks {
     		
     		// STACK SIZE REDUCTION
         	StackSizeTweaks.init();
+        	
+        	if (IguanaConfig.removeVanillaLeveling) GuiIngameForge.renderExperiance = false;
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			

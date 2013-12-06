@@ -72,6 +72,7 @@ public class IguanaConfig {
 	public static boolean disableDiamondGen;
 	
 	// other
+	public static boolean removeVanillaLeveling;
 	public static boolean increasedStepHeight;
     public static boolean lessObviousSilverfish;
     public static boolean alterPoison;
@@ -322,6 +323,10 @@ public class IguanaConfig {
         // other
 		ConfigCategory otherCategory = config.getCategory("other");
 		otherCategory.setComment("Collection of misfits");
+        
+        Property removeVanillaLevelingProperty = config.get("other", "removeVanillaLeveling", false);
+        removeVanillaLevelingProperty.comment = "Remove XP bar and XP orbs?";
+        removeVanillaLeveling = removeVanillaLevelingProperty.getBoolean(false);
         
         Property increasedStepHeightProperty = config.get("other", "increasedStepHeight", false);
         increasedStepHeightProperty.comment = "Can players step up full blocks without jumping?";
