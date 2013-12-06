@@ -57,7 +57,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1i", dependencies = "after:UndergroundBiomes")
+@Mod(modid="IguanaTweaks", name="Iguana Tweaks", version="1.6.X-1i", dependencies = "after:*")
 @NetworkMod(clientSideRequired=true, serverSideRequired=true, channels={"IguanaTweaks"}, packetHandler = IguanaPacketHandler.class)
 @ModstatInfo(prefix="igtweaks")
 public class IguanaTweaks {
@@ -148,7 +148,10 @@ public class IguanaTweaks {
     		// STACK SIZE REDUCTION
         	StackSizeTweaks.init();
         	
-        	if (IguanaConfig.removeVanillaLeveling) GuiIngameForge.renderExperiance = false;
+        	// FURNACE XP TWEAKS
+        	XpTweaks.init();
+        	
+        	if (!IguanaConfig.renderExperienceHud) GuiIngameForge.renderExperiance = false;
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			

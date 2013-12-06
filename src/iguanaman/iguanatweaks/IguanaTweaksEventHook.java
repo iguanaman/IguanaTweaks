@@ -34,6 +34,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable;
+import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.Event.Result;
@@ -283,7 +284,8 @@ public class IguanaTweaksEventHook {
 			
 			if (IguanaConfig.restrictedDrops.size() > 0
 					|| (IguanaConfig.itemLifespanPlayerDeath != 6000 && isPlayer)
-					|| (IguanaConfig.itemLifespanMobDeath != 6000 && !isPlayer))
+					|| (IguanaConfig.itemLifespanMobDeath != 6000 && !isPlayer)
+					)
 			{
 				Iterator<EntityItem> i = event.drops.iterator();
 				while (i.hasNext()) {
@@ -423,11 +425,30 @@ public class IguanaTweaksEventHook {
 	    		EntityItem item = (EntityItem)event.entity;
 	    		if (item.lifespan != 6000 && IguanaConfig.itemLifespan != 6000) item.lifespan = IguanaConfig.itemLifespan;
 	    	}
-    		else if (event.entity instanceof EntityXPOrb && IguanaConfig.removeVanillaLeveling)
+    		else if (event.entity instanceof EntityXPOrb)
     		{
     			EntityXPOrb orb = (EntityXPOrb)event.entity;
-    			orb.xpOrbAge = 6000;
+    			
+    			if (IguanaConfig.itemLifespanXp != 6000)
+    			{
+    				orb.xpOrbAge = 6000 - IguanaConfig.itemLifespanXp;
+    			}
+    			
+    			if (IguanaConfig.experiencePercentageAll != 100)
+    			{
+					orb.xpValue = Math.round((float)orb.xpValue * (IguanaConfig.experiencePercentageAll / 100f)); 
+					if (orb.xpValue == 0) orb.xpOrbAge = 6000;
+    			}
     		}
+    	}
+    }
+    
+    @ForgeSubscribe
+    public void onBreakEvent(BreakEvent event)
+    {
+    	if (IguanaConfig.experiencePercentageOre != 100)
+    	{
+    		event.setExpToDrop(Math.round((float)event.getExpToDrop() * (IguanaConfig.experiencePercentageOre / 100f)));
     	}
     }
     

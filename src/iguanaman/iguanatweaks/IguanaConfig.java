@@ -60,6 +60,7 @@ public class IguanaConfig {
 	public static int itemLifespanMobDeath;
 	public static int itemLifespanPlayerDeath;
 	public static int itemLifespanTossed;
+	public static int itemLifespanXp;
 	
 	// disable world gen
 	public static boolean disableDirtGen;
@@ -71,8 +72,13 @@ public class IguanaConfig {
 	public static boolean disableLapisGen;
 	public static boolean disableDiamondGen;
 	
+	// experience
+	public static boolean renderExperienceHud;
+	public static int experiencePercentageSmelting;
+	public static int experiencePercentageOre;
+	public static int experiencePercentageAll;
+	
 	// other
-	public static boolean removeVanillaLeveling;
 	public static boolean increasedStepHeight;
     public static boolean lessObviousSilverfish;
     public static boolean alterPoison;
@@ -278,9 +284,14 @@ public class IguanaConfig {
         itemLifespanPlayerDeathProperty.set(itemLifespanPlayerDeath);
 
         Property itemLifespanTossedProperty = config.get("itemlifespans", "itemLifespanTossed", 6000);
-        itemLifespanTossedProperty.comment = "Lifespan (in ticks) of items tossed on the grown (default 6000)";
+        itemLifespanTossedProperty.comment = "Lifespan (in ticks) of items tossed on the ground (default 6000)";
         itemLifespanTossed = Math.max(itemLifespanTossedProperty.getInt(6000), 0);
         itemLifespanTossedProperty.set(itemLifespanTossed);
+
+        Property itemLifespanXpProperty = config.get("itemlifespans", "itemLifespanXp", 6000);
+        itemLifespanXpProperty.comment = "Lifespan (in ticks) of xp orbs (default 6000) (Must be between 0 and 6000)";
+        itemLifespanXp = Math.min(Math.max(itemLifespanXpProperty.getInt(6000), 0), 6000);
+        itemLifespanXpProperty.set(itemLifespanXp);
         
         
         // disable world gen
@@ -318,15 +329,35 @@ public class IguanaConfig {
         Property disableDiamondGenProperty = config.get("vanillaoregen", "disableDiamondGen", false);
         disableDiamondGenProperty.comment = "Disables vanilla generation of Diamond ore";
         disableDiamondGen = disableDiamondGenProperty.getBoolean(false);
+        
+        
+        // experience
+		ConfigCategory experienceCategory = config.getCategory("experience");
+		experienceCategory.setComment("Configure the vanilla experience mechanics");
+		
+        Property renderExperienceHudProperty = config.get("experience", "renderExperienceHud", true);
+        renderExperienceHudProperty.comment = "Render the experience bar and level on the HUD?";
+        renderExperienceHud = renderExperienceHudProperty.getBoolean(true);
+        
+        Property experiencePercentageSmeltingProperty = config.get("experience", "experiencePercentageSmelting", 100);
+        experiencePercentageSmeltingProperty.comment = "Percentage of experience given when smelting items (0 to disable smelting giving xp)";
+        experiencePercentageSmelting = Math.max(experiencePercentageSmeltingProperty.getInt(100), 0);
+        experiencePercentageSmeltingProperty.set(experiencePercentageSmelting); 
+        
+        Property experiencePercentageOreProperty = config.get("experience", "experiencePercentageOre", 100);
+        experiencePercentageOreProperty.comment = "Percentage of experience dropped by blocks (0 to disable blocks dropping xp)";
+        experiencePercentageOre = Math.max(experiencePercentageOreProperty.getInt(100), 0);
+        experiencePercentageOreProperty.set(experiencePercentageOre); 
+        
+        Property experiencePercentageAllProperty = config.get("experience", "experiencePercentageAll", 100);
+        experiencePercentageAllProperty.comment = "Percentage of experience given by orbs (0 to disable all xp orbs from being created)";
+        experiencePercentageAll = Math.max(experiencePercentageAllProperty.getInt(100), 0);
+        experiencePercentageAllProperty.set(experiencePercentageAll); 
 
         
         // other
 		ConfigCategory otherCategory = config.getCategory("other");
 		otherCategory.setComment("Collection of misfits");
-        
-        Property removeVanillaLevelingProperty = config.get("other", "removeVanillaLeveling", false);
-        removeVanillaLevelingProperty.comment = "Remove XP bar and XP orbs?";
-        removeVanillaLeveling = removeVanillaLevelingProperty.getBoolean(false);
         
         Property increasedStepHeightProperty = config.get("other", "increasedStepHeight", false);
         increasedStepHeightProperty.comment = "Can players step up full blocks without jumping?";
