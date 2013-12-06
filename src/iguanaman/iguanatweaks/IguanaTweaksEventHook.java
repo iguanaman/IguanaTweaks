@@ -200,8 +200,6 @@ public class IguanaTweaksEventHook {
 				
 					speedModifier = speedModifierArmour * speedModifierHurt * speedModifierTerrain * speedModifierWeight;
 					
-					if (jumping) speedModifier = 0.75d + (speedModifier / 4d);
-					
 					if (entity instanceof EntityPlayerSP) 
 					{
 						EntityPlayerSP playerSP = (EntityPlayerSP)entity;
@@ -228,6 +226,7 @@ public class IguanaTweaksEventHook {
 			
 			if (speedModifier != 1d)
 			{
+				if (jumping) speedModifier = 0.75d + (speedModifier / 4d);
 		    	speedModifier = (2d * speedModifier) - 1d;
 				entity.motionX *= speedModifier;
 		    	entity.motionZ *= speedModifier;
