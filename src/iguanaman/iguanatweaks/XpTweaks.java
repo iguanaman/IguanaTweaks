@@ -42,7 +42,7 @@ public class XpTweaks {
 	        	Entry smeltingEntry = (Entry)smeltingEntryObject;
 	        	if (smeltingEntry != null && smeltingEntry.getValue() != null)
 	        	{
-	        		float xp = (float)smeltingEntry.getValue() * (IguanaConfig.experiencePercentageSmelting / 100f);
+	        		float xp = (Float)smeltingEntry.getValue() * (IguanaConfig.experiencePercentageSmelting / 100f);
 	        		smeltingEntry.setValue(Float.valueOf(xp));
 	        	}
 	        }
