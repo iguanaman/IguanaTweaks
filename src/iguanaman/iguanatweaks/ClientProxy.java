@@ -6,6 +6,7 @@ import cpw.mods.fml.relauncher.Side;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeaves;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 public class ClientProxy extends CommonProxy {
@@ -16,6 +17,11 @@ public class ClientProxy extends CommonProxy {
         
         public void registerLocalization() {
         	LanguageRegistry.instance().addStringLocalization("potion.newSlowdownPotion", "In Pain");
+        }
+        
+        public void disableExperienceHud()
+        {
+        	GuiIngameForge.renderExperiance = false;
         }
        
 }

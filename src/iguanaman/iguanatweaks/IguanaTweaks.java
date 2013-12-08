@@ -151,7 +151,7 @@ public class IguanaTweaks {
         	// FURNACE XP TWEAKS
         	XpTweaks.init();
         	
-        	if (!IguanaConfig.renderExperienceHud) GuiIngameForge.renderExperiance = false;
+        	if (!IguanaConfig.renderExperienceHud) proxy.disableExperienceHud();
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			

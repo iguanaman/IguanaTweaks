@@ -1,12 +1,13 @@
 package iguanaman.iguanatweaks;
 
+import net.minecraftforge.client.GuiIngameForge;
+
 public class CommonProxy {
        
         // Client stuff
-        public void registerRenderers() {
-                // Nothing here as the server doesn't render graphics!
-        }
+        public void registerRenderers() {}
         
-        public void registerLocalization() {
-        }
+        public void registerLocalization() {}
+        
+        public void disableExperienceHud() {}
 }
