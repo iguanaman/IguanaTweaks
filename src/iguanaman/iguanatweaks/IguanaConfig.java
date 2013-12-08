@@ -74,7 +74,7 @@ public class IguanaConfig {
 	
 	// experience
 	public static boolean renderExperienceHud;
-	public static int experiencePercentageSmelting;
+	//public static int experiencePercentageSmelting;
 	public static int experiencePercentageOre;
 	public static int experiencePercentageAll;
 	
@@ -339,10 +339,12 @@ public class IguanaConfig {
         renderExperienceHudProperty.comment = "Render the experience bar and level on the HUD?";
         renderExperienceHud = renderExperienceHudProperty.getBoolean(true);
         
+        /*
         Property experiencePercentageSmeltingProperty = config.get("experience", "experiencePercentageSmelting", 100);
         experiencePercentageSmeltingProperty.comment = "Percentage of experience given when smelting items (0 to disable smelting giving xp)";
         experiencePercentageSmelting = Math.max(experiencePercentageSmeltingProperty.getInt(100), 0);
         experiencePercentageSmeltingProperty.set(experiencePercentageSmelting); 
+		*/
         
         Property experiencePercentageOreProperty = config.get("experience", "experiencePercentageOre", 100);
         experiencePercentageOreProperty.comment = "Percentage of experience dropped by blocks (0 to disable blocks dropping xp)";

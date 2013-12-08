@@ -15,6 +15,7 @@ public class XpTweaks {
 
 	public static void init()
 	{
+		/*
 		if (IguanaConfig.experiencePercentageSmelting != 100)
 		{
 			
@@ -47,6 +48,7 @@ public class XpTweaks {
 	        	}
 	        }
 		}
+		*/
 	}
 
 }
