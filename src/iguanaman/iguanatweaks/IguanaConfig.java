@@ -278,9 +278,9 @@ public class IguanaConfig {
         itemLifespanMobDeath = Math.max(itemLifespanMobDeathProperty.getInt(6000), 0);
         itemLifespanMobDeathProperty.set(itemLifespanMobDeath);
 
-        Property itemLifespanPlayerDeathProperty = config.get("itemlifespans", "itemLifespanPlayerDeath", 6000);
-        itemLifespanPlayerDeathProperty.comment = "Lifespan (in ticks) of items dropped when a player dies (default 6000)";
-        itemLifespanPlayerDeath = Math.max(itemLifespanPlayerDeathProperty.getInt(6000), 0);
+        Property itemLifespanPlayerDeathProperty = config.get("itemlifespans", "itemLifespanPlayerDeath", Integer.MAX_VALUE);
+        itemLifespanPlayerDeathProperty.comment = "Lifespan (in ticks) of items dropped when a player dies (vanilla default 6000)";
+        itemLifespanPlayerDeath = Math.min(Math.max(itemLifespanPlayerDeathProperty.getInt(Integer.MAX_VALUE), 0), Integer.MAX_VALUE);
         itemLifespanPlayerDeathProperty.set(itemLifespanPlayerDeath);
 
         Property itemLifespanTossedProperty = config.get("itemlifespans", "itemLifespanTossed", 6000);
