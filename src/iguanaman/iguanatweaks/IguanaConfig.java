@@ -11,7 +11,6 @@ import net.minecraftforge.common.Property;
 public class IguanaConfig {
 
 	// hardness
-	public static boolean logHardnessChanges;
     public static double hardnessMultiplier;
     public static boolean hardnessBlockListIsWhitelist;
     public static List<Integer> hardnessBlockList = new ArrayList<Integer>();
@@ -94,10 +93,6 @@ public class IguanaConfig {
         // hardness
 		ConfigCategory hardnessCategory = config.getCategory("hardness");
 		hardnessCategory.setComment("Change the hardness of blocks, using either a blacklist or whitelist");
-        
-        Property logHardnessChangesProperty = config.get("hardness", "logHardnessChanges", false);
-        logHardnessChangesProperty.comment = "Writes a line to the console log when the stack size of an item/block gets changed";
-        logHardnessChanges = logHardnessChangesProperty.getBoolean(false);
         
         Property hardnessMultiplierProperty = config.get("hardness", "hardnessMultiplier", 2d);
         hardnessMultiplierProperty.comment = "Multiplier applied to the hardness of blocks (set to 1 to disable feature)";

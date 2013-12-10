@@ -119,30 +119,6 @@ public class IguanaTweaks {
 
         @EventHandler
         public void postInit(FMLPostInitializationEvent event) {
-
-            // HARDNESS MULTIPLIER
-    		if (IguanaConfig.hardnessMultiplier != 1f) {
-            	IguanaLog.log("Changing hardness of blocks");
-            	
-    			for (Block block : Block.blocksList)
-    			{
-    				if (block != null && block.blockHardness > 0f)
-    				{
-	    				if ((IguanaConfig.hardnessBlockListIsWhitelist && IguanaConfig.hardnessBlockList.contains(block.blockID))
-	    						|| (!IguanaConfig.hardnessBlockListIsWhitelist && !IguanaConfig.hardnessBlockList.contains(block.blockID)))
-	    				{
-	    					float newHardness = block.blockHardness * (float)IguanaConfig.hardnessMultiplier;
-	    					if (IguanaConfig.logHardnessChanges) IguanaLog.log("Changing hardness of " + block.getUnlocalizedName() + " to " + Float.toString(newHardness));
-	    					block.blockHardness = newHardness;
-	    				}
-    				}
-    			}
-	            
-	            if (Loader.isModLoaded("UndergroundBiomes") && IguanaConfig.hardnessMultiplier != 1d)
-	            {
-	            	exterminatorJeff.undergroundBiomes.common.UndergroundBiomes.hardnessModifier *= (float)IguanaConfig.hardnessMultiplier;
-	            }
-    		}
     		
     		// STACK SIZE REDUCTION
         	StackSizeTweaks.init();

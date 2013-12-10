@@ -34,6 +34,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -427,6 +428,23 @@ public class IguanaEventHook {
     	if (IguanaConfig.experiencePercentageOre != 100)
     	{
     		event.setExpToDrop(Math.round((float)event.getExpToDrop() * (IguanaConfig.experiencePercentageOre / 100f)));
+    	}
+    }
+    
+    @ForgeSubscribe
+    public void onBreakSpeed(BreakSpeed event)
+    {
+    	if (IguanaConfig.hardnessMultiplier != 1d && event.entityPlayer != null && event.block != null)
+    	{
+    		if ((IguanaConfig.hardnessBlockListIsWhitelist && IguanaConfig.hardnessBlockList.contains(event.block.blockID))
+    				|| (!IguanaConfig.hardnessBlockListIsWhitelist && !IguanaConfig.hardnessBlockList.contains(event.block.blockID))
+    				)
+    		{
+    			if (IguanaConfig.hardnessMultiplier == 0d)
+    				event.newSpeed = Float.MAX_VALUE;
+    			else
+    				event.newSpeed = event.originalSpeed / (float)IguanaConfig.hardnessMultiplier;
+    		}
     	}
     }
     
