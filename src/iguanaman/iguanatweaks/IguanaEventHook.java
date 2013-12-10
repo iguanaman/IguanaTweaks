@@ -542,8 +542,8 @@ public class IguanaEventHook {
 	@ForgeSubscribe
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
     	Minecraft mc = Minecraft.getMinecraft();
-        
-    	if (IguanaConfig.hideExperience || IguanaConfig.hideHotbar)
+    	
+    	if (event.type.equals(ElementType.ALL))
     	{
 	    	int guiHeight = 39;
 	        if (!GuiIngameForge.renderExperiance) guiHeight -= 5;
