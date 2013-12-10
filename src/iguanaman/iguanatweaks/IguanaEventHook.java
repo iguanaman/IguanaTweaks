@@ -530,9 +530,7 @@ public class IguanaEventHook {
 	@ForgeSubscribe
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
     	Minecraft mc = Minecraft.getMinecraft();
-		GuiIngame g = mc.ingameGUI;
-        int width = event.resolution.getScaledWidth();
-        int height = event.resolution.getScaledHeight();
+    	GuiIngameForge g = (GuiIngameForge)mc.ingameGUI;
         
         if (IguanaConfig.hideExperience)
         {
@@ -540,7 +538,7 @@ public class IguanaEventHook {
         	GuiIngameForge.right_height = 34;
         }
         
-    	if (IguanaConfig.hideHungerBar &&event.type.equals(ElementType.FOOD)) 
+    	if (IguanaConfig.hideHungerBar && event.type.equals(ElementType.FOOD)) 
     	{
     		EntityClientPlayerMP player = mc.thePlayer;
     		NBTTagCompound tags = player.getEntityData();
@@ -551,12 +549,15 @@ public class IguanaEventHook {
     	}
     	else if (IguanaConfig.hideHotbarBackground && event.type.equals(ElementType.HOTBAR) && !event.isCanceled())
     	{
+            int width = event.resolution.getScaledWidth();
+            int height = event.resolution.getScaledHeight();
+            
             mc.mcProfiler.startSection("actionBar");
 
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.renderEngine.bindTexture(GuiIngameForge.WIDGITS);
+            mc.renderEngine.bindTexture(g.WIDGITS);
 
             InventoryPlayer inv = mc.thePlayer.inventory;
             //g.drawTexturedModalRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
