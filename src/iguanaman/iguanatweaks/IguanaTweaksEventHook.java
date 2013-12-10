@@ -1,5 +1,6 @@
 package iguanaman.iguanatweaks;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -32,6 +33,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
@@ -48,8 +50,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class IguanaTweaksEventHook {
-	
-	int lastJump = 0;
 
 	@ForgeSubscribe
     public void onLivingUpdate(LivingUpdateEvent event) {
@@ -64,36 +64,12 @@ public class IguanaTweaksEventHook {
 			boolean isCreative = false;
 			boolean jumping = false;
 			
-			
 			if (entity instanceof EntityPlayer)
 			{
 				EntityPlayer player = (EntityPlayer)entity;
-				
 				if (entity.entityAge % IguanaConfig.tickRateEntityUpdate == 0 && IguanaConfig.increasedStepHeight) player.stepHeight = 1f;
-				
-				//IguanaLog.log("playerage" + entity.entityAge + " playeruuid" + entity.entityUniqueID);
-				
 				if (player.capabilities.isCreativeMode) isCreative = true;
-				int lastJump = 0;
-				
-				if (IguanaTweaks.playerLastJump.containsKey(player.username))
-				{
-					lastJump  = IguanaTweaks.playerLastJump.get(player.username) - 1;
-				}
-				
-				if (player.jumpTicks == 10) lastJump = 10;
-				
-				if (lastJump <= 0) 
-				{
-					IguanaTweaks.playerLastJump.remove(player.username);
-				}
-				else
-				{
-					IguanaTweaks.playerLastJump.put(player.username, lastJump);
-					jumping = true;
-				}
-				
-				//if (jumping) FMLLog.warning("lastjump" + lastJump);
+				if (player.jumpTicks > 0) jumping = true;
 			}
 
 			if (!IguanaTweaks.entityDataMap.containsKey(entity.entityUniqueID) || entity.entityAge % IguanaConfig.tickRateEntityUpdate == 0)

@@ -74,7 +74,6 @@ public class IguanaTweaks {
         public static Potion slowdownNew;
 
         public static ConcurrentHashMap<UUID, EntityData> entityDataMap = new ConcurrentHashMap<UUID, EntityData>();
-        public static ConcurrentHashMap<String, Integer> playerLastJump = new ConcurrentHashMap<String, Integer>();
 
         @EventHandler
         public void preInit(FMLPreInitializationEvent event) {
