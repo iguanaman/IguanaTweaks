@@ -31,6 +31,18 @@ public class IguanaConfig {
     public static int respawnLocationRandomisationMax;
 	public static int respawnHealth;
 	public static boolean respawnHealthDifficultyScaling;
+
+	// hud
+	public static boolean hideHotbar;
+	public static boolean hideHotbarBackground;
+	public static int hideHotbarDelay;
+	public static boolean hideHealthBar;
+	public static int hideHealthBarThreshold;
+	public static int hideHealthBarDelay;
+	public static boolean hideHungerBar;
+	public static int hideHungerBarThreshold;
+	public static int hideHungerBarDelay;
+	public static boolean hideExperience;
 	
 	// restricted drops
     public static List<String> restrictedDrops = new ArrayList<String>();
@@ -72,7 +84,6 @@ public class IguanaConfig {
 	public static boolean disableDiamondGen;
 	
 	// experience
-	public static boolean renderExperienceHud;
 	//public static int experiencePercentageSmelting;
 	public static int experiencePercentageOre;
 	public static int experiencePercentageAll;
@@ -176,7 +187,57 @@ public class IguanaConfig {
         spawnLocationRandomisationMaxProperty.comment = "Exactly where you spawn (upon login) is randomised around the spawn point, upto a maximum of this many blocks away (set to 0 to disable)";
         spawnLocationRandomisationMax = Math.max(spawnLocationRandomisationMaxProperty.getInt(0), spawnLocationRandomisationMin);
         spawnLocationRandomisationMaxProperty.set(spawnLocationRandomisationMax);
+
         
+        // hud
+		ConfigCategory hudCategory = config.getCategory("hud");
+		hudCategory.setComment("Options to hide HUD parts in certain situations");
+		
+        Property hideHotbarProperty = config.get("hud", "hideHotbar", false);
+        hideHotbarProperty.comment = "Hide the hotbar until an item is selected?";
+        hideHotbar = hideHotbarProperty.getBoolean(false);
+		
+        Property hideHotbarBackgroundProperty = config.get("hud", "hideHotbarBackground", false);
+        hideHotbarBackgroundProperty.comment = "Hide the hotbar background texture?";
+        hideHotbarBackground = hideHotbarBackgroundProperty.getBoolean(false);
+        
+        Property hideHotbarDelayProperty = config.get("hud", "hideHotbarDelay", 3);
+        hideHotbarDelayProperty.comment = "Delay (in seconds) before hiding the hotbar";
+        hideHotbarDelay = Math.max(hideHotbarDelayProperty.getInt(3), 0);
+        hideHotbarDelayProperty.set(hideHotbarDelay);
+		
+        Property hideHealthBarProperty = config.get("hud", "hideHealthBar", false);
+        hideHealthBarProperty.comment = "Hide the health bar when above a certain threshold?";
+        hideHealthBar = hideHealthBarProperty.getBoolean(false);
+        
+        Property hideHealthBarDelayProperty = config.get("hud", "hideHealthBarDelay", 5);
+        hideHealthBarDelayProperty.comment = "Delay (in seconds) before hiding the health bar";
+        hideHealthBarDelay = Math.max(hideHealthBarDelayProperty.getInt(5), 0);
+        hideHealthBarDelayProperty.set(hideHealthBarDelay);
+        
+        Property hideHealthBarThresholdProperty = config.get("hud", "hideHealthBarThreshold", 20);
+        hideHealthBarThresholdProperty.comment = "Health needs to be equal to or above this before the bar will hide";
+        hideHealthBarThreshold = Math.max(hideHealthBarThresholdProperty.getInt(20), 0);
+        hideHealthBarThresholdProperty.set(hideHealthBarThreshold);
+		
+        Property hideHungerBarProperty = config.get("hud", "hideHungerBar", false);
+        hideHungerBarProperty.comment = "Hide the hunger bar when above a certain threshold?";
+        hideHungerBar = hideHungerBarProperty.getBoolean(false);
+        
+        Property hideHungerBarDelayProperty = config.get("hud", "hideHungerBarDelay", 5);
+        hideHungerBarDelayProperty.comment = "Delay (in seconds) before hiding the hunger bar";
+        hideHungerBarDelay = Math.max(hideHungerBarDelayProperty.getInt(5), 0);
+        hideHungerBarDelayProperty.set(hideHungerBarDelay);
+        
+        Property hideHungerBarThresholdProperty = config.get("hud", "hideHungerBarThreshold", 20);
+        hideHungerBarThresholdProperty.comment = "Hunger needs to be equal to or above this before the bar will hide";
+        hideHungerBarThreshold = Math.max(hideHungerBarThresholdProperty.getInt(20), 0);
+        hideHungerBarThresholdProperty.set(hideHungerBarThreshold);
+		
+        Property hideExperienceProperty = config.get("hud", "hideExperience", false);
+        hideExperienceProperty.comment = "Hide the experience bar and level stuff on the HUD?";
+        hideExperience = hideExperienceProperty.getBoolean(false);
+    	
         
         // movement restriction
 		ConfigCategory movementrestrictionCategory = config.getCategory("movementrestriction");
@@ -329,10 +390,6 @@ public class IguanaConfig {
         // experience
 		ConfigCategory experienceCategory = config.getCategory("experience");
 		experienceCategory.setComment("Configure the vanilla experience mechanics");
-		
-        Property renderExperienceHudProperty = config.get("experience", "renderExperienceHud", true);
-        renderExperienceHudProperty.comment = "Render the experience bar and level on the HUD?";
-        renderExperienceHud = renderExperienceHudProperty.getBoolean(true);
         
         /*
         Property experiencePercentageSmeltingProperty = config.get("experience", "experiencePercentageSmelting", 100);

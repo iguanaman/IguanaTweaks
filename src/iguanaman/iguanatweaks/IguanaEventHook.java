@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -15,16 +18,23 @@ import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.EnumStatus;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.client.entity.*;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiIngame;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.packet.Packet6SpawnPosition;
 import net.minecraft.network.packet.Packet70GameEvent;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.FoodStats;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -38,6 +48,8 @@ import net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
+import net.minecraftforge.client.GuiIngameForge;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.Event.Result;
@@ -71,6 +83,60 @@ public class IguanaEventHook {
 				if (entity.entityAge % IguanaConfig.tickRateEntityUpdate == 0 && IguanaConfig.increasedStepHeight) player.stepHeight = 1f;
 				if (player.capabilities.isCreativeMode) isCreative = true;
 				if (player.jumpTicks > 0) jumping = true;
+				
+				NBTTagCompound tags = player.getEntityData();
+				
+				if (IguanaConfig.hideHealthBar)
+				{
+					if (player.getHealth() >= (float)IguanaConfig.hideHealthBarThreshold)
+					{
+						int delay = tags.getInteger("HideHealthBarDelay");
+						if (delay >= IguanaConfig.hideHealthBarDelay * 20)
+						{
+							GuiIngameForge.renderHealth = false;
+						}
+						else
+						{
+							tags.setInteger("HideHealthBarDelay", ++delay);
+						}
+					}
+					else
+					{
+						tags.removeTag("HideHealthBarDelay");
+						GuiIngameForge.renderHealth = true;
+					}
+				}
+				
+				if (IguanaConfig.hideHungerBar)
+				{
+					if (player.foodStats.getFoodLevel() >= IguanaConfig.hideHungerBarThreshold)
+					{
+						int delay = tags.getInteger("HideHungerBarDelay");
+						if (delay < IguanaConfig.hideHungerBarDelay * 20)
+						{
+							tags.setInteger("HideHungerBarDelay", ++delay);
+						}
+					}
+					else
+					{
+						tags.removeTag("HideHungerBarDelay");
+						GuiIngameForge.renderFood = true;
+					}
+				}
+				
+				if (IguanaConfig.hideHotbar)
+				{
+					int delay = tags.getInteger("HideHotbarDelay");
+					if (delay >= IguanaConfig.hideHotbarDelay * 20)
+					{
+						GuiIngameForge.renderHotbar = false;
+					}
+					else
+					{
+						tags.setInteger("HideHotbarDelay", ++delay);
+						GuiIngameForge.renderHotbar = true;
+					}
+				}
 			}
 
 			if (IguanaTweaks.entityDataMap.containsKey(entity.entityUniqueID))
@@ -445,6 +511,73 @@ public class IguanaEventHook {
     			else
     				event.newSpeed = event.originalSpeed / (float)IguanaConfig.hardnessMultiplier;
     		}
+    	}
+    }
+
+    @SideOnly(Side.CLIENT)
+    @ForgeSubscribe
+    public void onMouseEvent(MouseEvent event)
+    {
+    	if (event.dwheel != 0)
+    	{
+    		EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+    		NBTTagCompound tags = player.getEntityData();
+    		tags.removeTag("HideHotbarDelay");
+    	}
+    }
+	
+    @SideOnly(Side.CLIENT)
+	@ForgeSubscribe
+	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+    	Minecraft mc = Minecraft.getMinecraft();
+		GuiIngame g = mc.ingameGUI;
+        int width = event.resolution.getScaledWidth();
+        int height = event.resolution.getScaledHeight();
+        
+        if (IguanaConfig.hideExperience)
+        {
+        	GuiIngameForge.left_height = 34;
+        	GuiIngameForge.right_height = 34;
+        }
+        
+    	if (IguanaConfig.hideHungerBar &&event.type.equals(ElementType.FOOD)) 
+    	{
+    		EntityClientPlayerMP player = mc.thePlayer;
+    		NBTTagCompound tags = player.getEntityData();
+			if (tags.getInteger("HideHungerBarDelay") >= IguanaConfig.hideHungerBarDelay * 20)
+			{
+	    		event.setCanceled(true);
+			}
+    	}
+    	else if (IguanaConfig.hideHotbarBackground && event.type.equals(ElementType.HOTBAR) && !event.isCanceled())
+    	{
+            mc.mcProfiler.startSection("actionBar");
+
+            GL11.glEnable(GL11.GL_BLEND);
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            mc.renderEngine.bindTexture(GuiIngameForge.WIDGITS);
+
+            InventoryPlayer inv = mc.thePlayer.inventory;
+            //g.drawTexturedModalRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
+            g.drawTexturedModalRect(width / 2 - 91 - 1 + inv.currentItem * 20, height - 22 - 1, 0, 22, 24, 22);
+
+            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            RenderHelper.enableGUIStandardItemLighting();
+
+            for (int i = 0; i < 9; ++i)
+            {
+                int x = width / 2 - 90 + i * 20 + 2;
+                int z = height - 16 - 3;
+                g.renderInventorySlot(i, x, z, event.partialTicks);
+            }
+
+            RenderHelper.disableStandardItemLighting();
+            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            mc.mcProfiler.endSection();
+            
+            event.setCanceled(true);
     	}
     }
     

@@ -13,6 +13,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockGravel;
 import net.minecraft.block.BlockSilverfish;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.command.ICommandManager;
 import net.minecraft.command.ServerCommandManager;
 import net.minecraft.creativetab.CreativeTabs;
@@ -33,9 +34,11 @@ import net.minecraftforge.common.Property;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
+import org.lwjgl.input.Keyboard;
 import org.modstats.ModstatInfo;
 import org.modstats.Modstats;
 
+import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Loader;
@@ -115,6 +118,26 @@ public class IguanaTweaks {
                     GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Block.torchWood, IguanaConfig.torchesPerCoal), 
                     		"c", "s", 'c', new ItemStack(Item.coal, 1, 1), 's', new ItemStack(Item.stick)));
         		}
+        		
+        		/*
+        		if (IguanaConfig.hideHotbar)
+        		{
+	        		KeyBinding[] key = {
+	        				new KeyBinding("Ignore me", Keyboard.KEY_0),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_1),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_2),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_3),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_4),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_5),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_6),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_7),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_8),
+	        				new KeyBinding("Ignore me", Keyboard.KEY_9)
+	        				};
+	                boolean[] repeat = {false, false, false, false, false, false, false, false, false, false};
+	                KeyBindingRegistry.registerKeyBinding(new IguanaKeyHandler(key, repeat));
+        		}
+        		*/
         }
 
         @EventHandler
@@ -126,7 +149,7 @@ public class IguanaTweaks {
         	// FURNACE XP TWEAKS
         	XpTweaks.init();
         	
-        	if (!IguanaConfig.renderExperienceHud) proxy.disableExperienceHud();
+        	if (IguanaConfig.hideExperience) proxy.disableExperienceHud();
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			
