@@ -35,6 +35,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.FoodStats;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -530,7 +531,7 @@ public class IguanaEventHook {
 	@ForgeSubscribe
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
     	Minecraft mc = Minecraft.getMinecraft();
-    	GuiIngameForge g = (GuiIngameForge)mc.ingameGUI;
+    	GuiIngame g = mc.ingameGUI;
         
         if (IguanaConfig.hideExperience)
         {
@@ -557,7 +558,7 @@ public class IguanaEventHook {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            mc.renderEngine.bindTexture(g.WIDGITS);
+            mc.renderEngine.bindTexture(new ResourceLocation("textures/gui/widgets.png"));
 
             InventoryPlayer inv = mc.thePlayer.inventory;
             //g.drawTexturedModalRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
