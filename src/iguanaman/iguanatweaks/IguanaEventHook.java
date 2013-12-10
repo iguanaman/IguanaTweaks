@@ -113,7 +113,11 @@ public class IguanaEventHook {
 					if (player.foodStats.getFoodLevel() >= IguanaConfig.hideHungerBarThreshold)
 					{
 						int delay = tags.getInteger("HideHungerBarDelay");
-						if (delay < IguanaConfig.hideHungerBarDelay * 20)
+						if (delay >= IguanaConfig.hideHungerBarDelay * 20)
+						{
+							GuiIngameForge.renderFood = false;
+						}
+						else
 						{
 							tags.setInteger("HideHungerBarDelay", ++delay);
 						}
@@ -378,6 +382,11 @@ public class IguanaEventHook {
 			Minecraft mc = Minecraft.getMinecraft();
 			EntityPlayer player = mc.thePlayer;
 			
+			if (IguanaConfig.showCreativeText && !mc.gameSettings.showDebugInfo && player.capabilities.isCreativeMode)
+			{
+				event.left.add("Creative Mode");
+			}
+			
 			if (IguanaTweaks.entityDataMap.containsKey(player.entityUniqueID))
 			{
 				EntityData playerWeightValues = IguanaTweaks.entityDataMap.get(player.entityUniqueID);
@@ -386,7 +395,9 @@ public class IguanaEventHook {
 					event.left.add("");
 					event.left.add("Weight: " + String.format("%.2f", playerWeightValues.currentWeight) + " / " + String.format("%.2f", playerWeightValues.maxWeight) 
 							+ " (" + String.format("%.2f", playerWeightValues.encumberance) + "%)");
-				} else if (!player.isDead && !player.capabilities.isCreativeMode && IguanaConfig.addEncumbranceHudText) {
+				} 
+				else if (!player.isDead && !player.capabilities.isCreativeMode && IguanaConfig.addEncumbranceHudText)
+				{
 					String color = "\u00A7f";
 					
 					String line = "";
@@ -531,13 +542,15 @@ public class IguanaEventHook {
 	@ForgeSubscribe
 	public void onRenderGameOverlay(RenderGameOverlayEvent.Pre event) {
     	Minecraft mc = Minecraft.getMinecraft();
-    	GuiIngame g = mc.ingameGUI;
         
-        if (IguanaConfig.hideExperience)
-        {
-        	GuiIngameForge.left_height = 34;
-        	GuiIngameForge.right_height = 34;
-        }
+    	if (IguanaConfig.hideExperience || IguanaConfig.hideHotbar)
+    	{
+	    	int guiHeight = 39;
+	        if (!GuiIngameForge.renderExperiance) guiHeight -= 5;
+	        if (!GuiIngameForge.renderHotbar) guiHeight -= 22;
+	    	GuiIngameForge.left_height = guiHeight;
+	    	GuiIngameForge.right_height = guiHeight;
+    	}
         
     	if (IguanaConfig.hideHungerBar && event.type.equals(ElementType.FOOD)) 
     	{
@@ -550,6 +563,7 @@ public class IguanaEventHook {
     	}
     	else if (IguanaConfig.hideHotbarBackground && event.type.equals(ElementType.HOTBAR) && !event.isCanceled())
     	{
+        	GuiIngame g = mc.ingameGUI;
             int width = event.resolution.getScaledWidth();
             int height = event.resolution.getScaledHeight();
             

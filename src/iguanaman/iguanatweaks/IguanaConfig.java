@@ -43,6 +43,7 @@ public class IguanaConfig {
 	public static int hideHungerBarThreshold;
 	public static int hideHungerBarDelay;
 	public static boolean hideExperience;
+	public static boolean showCreativeText;
 	
 	// restricted drops
     public static List<String> restrictedDrops = new ArrayList<String>();
@@ -237,6 +238,10 @@ public class IguanaConfig {
         Property hideExperienceProperty = config.get("hud", "hideExperience", false);
         hideExperienceProperty.comment = "Hide the experience bar and level stuff on the HUD?";
         hideExperience = hideExperienceProperty.getBoolean(false);
+		
+        Property showCreativeTextProperty = config.get("hud", "showCreativeText", false);
+        showCreativeTextProperty.comment = "Show 'Creative Mode' in the top left if in creative?";
+        showCreativeText = showCreativeTextProperty.getBoolean(false);
     	
         
         // movement restriction
