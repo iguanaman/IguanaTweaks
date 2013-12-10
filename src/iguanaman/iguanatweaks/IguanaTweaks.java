@@ -154,8 +154,9 @@ public class IguanaTweaks {
         	
 			if (IguanaConfig.maxCarryWeight > 0) IguanaLog.log("Starting weight watcher");
 			
-           MinecraftForge.EVENT_BUS.register(new IguanaTweaksEventHook());
+           MinecraftForge.EVENT_BUS.register(new IguanaEventHook());
            GameRegistry.registerPlayerTracker(new IguanaPlayerHandler());
+           proxy.registerTickHandler();
         }
         
 		@EventHandler

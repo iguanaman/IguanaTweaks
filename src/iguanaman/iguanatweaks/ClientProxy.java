@@ -12,7 +12,10 @@ import net.minecraftforge.client.MinecraftForgeClient;
 public class ClientProxy extends CommonProxy {
        
         @Override
-        public void registerRenderers() {
+        public void registerRenderers() {}
+        
+        public void registerTickHandler() {
+            TickRegistry.registerTickHandler(new IguanaTickHandler(), Side.CLIENT);
         }
         
         public void registerLocalization() {

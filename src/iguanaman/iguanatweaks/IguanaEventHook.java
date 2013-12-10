@@ -49,7 +49,7 @@ import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class IguanaTweaksEventHook {
+public class IguanaEventHook {
 
 	@ForgeSubscribe
     public void onLivingUpdate(LivingUpdateEvent event) {
@@ -72,7 +72,11 @@ public class IguanaTweaksEventHook {
 				if (player.jumpTicks > 0) jumping = true;
 			}
 
-			if (!IguanaTweaks.entityDataMap.containsKey(entity.entityUniqueID) || entity.entityAge % IguanaConfig.tickRateEntityUpdate == 0)
+			if (IguanaTweaks.entityDataMap.containsKey(entity.entityUniqueID))
+			{
+				speedModifier = IguanaTweaks.entityDataMap.get(entity.entityUniqueID).speedModifier;
+			}
+			else
 			{
 				double slownessWeight = 0d;
 				double slownessArmour = (double)entity.getTotalArmorValue() * IguanaConfig.armorWeight;
@@ -199,10 +203,6 @@ public class IguanaTweaksEventHook {
 				
 				EntityData entityData = new EntityData(speedModifier, weight, maxWeight, slownessWeight, slownessArmour);
 				IguanaTweaks.entityDataMap.put(entity.entityUniqueID, entityData);
-			}
-			else
-			{
-				speedModifier = IguanaTweaks.entityDataMap.get(entity.entityUniqueID).speedModifier;
 			}
 			
 			if (speedModifier != 1d)
