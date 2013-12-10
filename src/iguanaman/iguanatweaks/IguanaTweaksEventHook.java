@@ -48,6 +48,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class IguanaTweaksEventHook {
+	
+	int lastJump = 0;
 
 	@ForgeSubscribe
     public void onLivingUpdate(LivingUpdateEvent event) {
@@ -338,8 +340,8 @@ public class IguanaTweaksEventHook {
 
 				if (mc.gameSettings.showDebugInfo && IguanaConfig.addEncumbranceDebugText) {
 					event.left.add("");
-					event.left.add("Weight: " + Double.toString(playerWeightValues.currentWeight) + " / " + Double.toString(playerWeightValues.maxWeight) 
-							+ " (" + Double.toString(playerWeightValues.encumberance) + "%)");
+					event.left.add("Weight: " + String.format("%.2f", playerWeightValues.currentWeight) + " / " + String.format("%.2f", playerWeightValues.maxWeight) 
+							+ " (" + String.format("%.2f", playerWeightValues.encumberance) + "%)");
 				} else if (!player.isDead && !player.capabilities.isCreativeMode && IguanaConfig.addEncumbranceHudText) {
 					String color = "\u00A7f";
 					
@@ -352,7 +354,7 @@ public class IguanaTweaksEventHook {
 						else if (playerWeightValues.encumberance >= 10) color = "\u00A7e";
 						
 						line = "Weight: " + Double.toString(Math.round(playerWeightValues.currentWeight)) + " / " + Double.toString(Math.round(playerWeightValues.maxWeight)) 
-								+ " (" + Double.toString(playerWeightValues.encumberance) + "%)";
+								+ " (" + String.format("%.2f", playerWeightValues.encumberance) + "%)";
 					}
 					else
 					{
