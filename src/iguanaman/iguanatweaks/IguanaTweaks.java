@@ -118,26 +118,6 @@ public class IguanaTweaks {
                     GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(Block.torchWood, IguanaConfig.torchesPerCoal), 
                     		"c", "s", 'c', new ItemStack(Item.coal, 1, 1), 's', new ItemStack(Item.stick)));
         		}
-        		
-        		/*
-        		if (IguanaConfig.hideHotbar)
-        		{
-	        		KeyBinding[] key = {
-	        				new KeyBinding("Ignore me", Keyboard.KEY_0),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_1),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_2),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_3),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_4),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_5),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_6),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_7),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_8),
-	        				new KeyBinding("Ignore me", Keyboard.KEY_9)
-	        				};
-	                boolean[] repeat = {false, false, false, false, false, false, false, false, false, false};
-	                KeyBindingRegistry.registerKeyBinding(new IguanaKeyHandler(key, repeat));
-        		}
-        		*/
         }
 
         @EventHandler
