@@ -277,9 +277,9 @@ public class IguanaEventHook {
 				IguanaTweaks.entityDataMap.put(entity.entityUniqueID, entityData);
 			}
 			
-			if (speedModifier != 1d)
+			if (speedModifier != 1d && !jumping)
 			{
-				if (jumping) speedModifier = 0.75d + (speedModifier / 4d);
+				//if (jumping) speedModifier = 0.75d + (speedModifier / 4d);
 		    	speedModifier = (2d * speedModifier) - 1d;
 				entity.motionX *= speedModifier;
 		    	entity.motionZ *= speedModifier;
@@ -548,8 +548,7 @@ public class IguanaEventHook {
 	    	int guiHeight = 39;
 	        if (!GuiIngameForge.renderExperiance) guiHeight -= 5;
 	        if (!GuiIngameForge.renderHotbar) guiHeight -= 22;
-	    	GuiIngameForge.left_height = guiHeight;
-	    	GuiIngameForge.right_height = guiHeight;
+	    	GuiIngameForge.left_height = GuiIngameForge.right_height = guiHeight;
     	}
         
     	if (IguanaConfig.hideHungerBar && event.type.equals(ElementType.FOOD)) 
