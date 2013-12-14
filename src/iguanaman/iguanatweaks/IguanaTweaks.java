@@ -137,14 +137,6 @@ public class IguanaTweaks {
            GameRegistry.registerPlayerTracker(new IguanaPlayerHandler());
            proxy.registerTickHandler();
         }
-        
-		@EventHandler
-		public void serverStarting(FMLServerStartingEvent event)
-		{
-			ICommandManager commandManager = FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager();
-			ServerCommandManager serverCommandManager = ((ServerCommandManager) commandManager);
-			serverCommandManager.registerCommand(new IguanaCommandConfig());
-		}
 		
 		public static double getBlockWeight(Block block)
 		{
